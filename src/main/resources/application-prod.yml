@@ -1,0 +1,32 @@
+######服务器参数############
+server:
+  port: 80
+#    address: 47.106.70.72
+# session timeout in seconds
+#the context-path, defaults to '/'
+  tomcat:
+    uri-encoding: UTF-8
+
+######微信参数############
+wx:
+#userId 公众号
+  USER-ID: gh_ed70fd57008b
+#appId
+  APPID: wx8864bd7398aa5270
+#appSecret
+  APPSECRET: c2c15a91c950e8a6fc106192b044adfb
+#token
+  TOKEN: 1314
+#自定义默认菜单
+  CUSTOM-MENU: {"button":[{"type":"click","name":"今日歌曲","key":"V1001_TODAY_MUSIC"},{"name":"菜单","sub_button":[{  "type":"view","name":"搜索","url":"http://www.soso.com/"},{"type":"view","name":"视频","url":"http://v.qq.com/"},{"type":"click", "name":"赞一下我们","key":"V1001_GOOD"}]}]}
+#个性化菜单
+  CONDITIONAL-MENU0: {"button":[{  "type":"click","name":"今日歌曲","key":"V1001_TODAY_MUSIC" },{"name":"菜单","sub_button":[{"type":"view","name":"搜索","url":"http://www.soso.com/"},{"type":"view","name":"视频","url":"http://v.qq.com/"},{"type":"click","name":"赞一下我们","key":"V1001_GOOD"}]}],"matchrule":{"group_id":"2","sex":"1","country":"中国","province":"广东","city":"广州","client_platform_type":"2","language":"zh_CN"}} 
+
+######业务参数############
+#用户注册URL、注销URL
+  user-create-url: http://localhost:8080/mfyx/user-create
+  user-cancel-url: http://localhost:8080/mfyx/user-cancel
+  user-update-url: http://localhost:8080/mfyx/user-update
+  
+  
+  

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeekhan.wx.mapper.WXMsgLogMapper">
+  <resultMap id="BaseResultMap" type="com.jeekhan.wx.model.WXMsgLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="from_user" jdbcType="VARCHAR" property="fromUser" />
+    <result column="incout" jdbcType="CHAR" property="incout" />
+    <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
+    <result column="event_type" jdbcType="VARCHAR" property="eventType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="resp_id" jdbcType="INTEGER" property="respId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jeekhan.wx.model.WXMsgLog">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, from_user, incout, msg_type, event_type, create_time, status, resp_id
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  
+  <select id="selectById" parameterType="bigdecimal" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_wxmsg_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+
+  <insert id="insert" parameterType="com.jeekhan.wx.model.WXMsgLog">
+    insert into tb_wxmsg_log (id, from_user, incout, 
+      msg_type, event_type, create_time, 
+      status, resp_id, content
+      )
+    values (#{id,jdbcType=INTEGER}, #{fromUser,jdbcType=VARCHAR}, #{incout,jdbcType=CHAR}, 
+      #{msgType,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=CHAR}, #{respId,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  
+  <update id="updateById" parameterType="com.jeekhan.wx.model.WXMsgLog">
+    update tb_wxmsg_log
+    <set>
+      <if test="fromUser != null">
+        from_user = #{fromUser,jdbcType=VARCHAR},
+      </if>
+      <if test="incout != null">
+        incout = #{incout,jdbcType=CHAR},
+      </if>
+      <if test="msgType != null">
+        msg_type = #{msgType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null">
+        event_type = #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="respId != null">
+        resp_id = #{respId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 统计最近48小时内的消息 -->
+  <select id="countLatestMsg" parameterType="map" resultType="int">
+  select count(1)
+  from tb_wxmsg_log 
+  <where>
+   round((now()-create_time)/3600)  &lt; 48
+  <if test="fromUser != null">
+  	and from_user = #{fromUser} 
+  </if>
+  <if test="inout != null">
+   and inout = #{inout}
+  </if>
+  <if test="msg_type != null">
+   and msg_type = #{msgType}
+  </if>
+  <if test="event_type != null">
+   and event_type = #{eventType}
+  </if>
+  <if test="status != null">
+   and `status` in (#{status})
+  </if>
+  </where> 
+  </select>
+  
+  <!-- 获取最近48小时内的消息 -->
+  <select id="selectLatestMsg" parameterType="map" resultType="int">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+  from tb_wxmsg_log 
+  <where>
+   round((now()-create_time)/3600)  &lt; 48
+  <if test="fromUser != null">
+  	and from_user = #{fromUser} 
+  </if>
+  <if test="inout != null">
+   and inout = #{inout}
+  </if>
+  <if test="msg_type != null">
+   and msg_type = #{msgType}
+  </if>
+  <if test="event_type != null">
+   and event_type = #{eventType}
+  </if>
+  <if test="status != null">
+   and `status` in (#{status})
+  </if>
+  </where> 
+  </select>
+  
+  
+</mapper>
