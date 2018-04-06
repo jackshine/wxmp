@@ -19,7 +19,7 @@
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
 <div class="container">
-  <#include "/sysTopMenu.ftl" encoding="utf8"> 
+  <#include "/page-top-menu.ftl" encoding="utf8"> 
   <div class="row">
 	  <div class="panel panel-primary" style="width:50%;height:500px;margin:50px 25%">
 	    <div class="panel-heading">

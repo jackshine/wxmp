@@ -4,18 +4,20 @@
   <resultMap id="BaseResultMap" type="com.jeekhan.wx.model.WXMsgLog">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="from_user" jdbcType="VARCHAR" property="fromUser" />
-    <result column="incout" jdbcType="CHAR" property="incout" />
+    <result column="inout" jdbcType="CHAR" property="inout" />
     <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
     <result column="event_type" jdbcType="VARCHAR" property="eventType" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="status" jdbcType="CHAR" property="status" />
     <result column="resp_id" jdbcType="INTEGER" property="respId" />
+    <result column="is_mass" jdbcType="CHAR" property="isMass" />
+    <result column="is_tpl" jdbcType="CHAR" property="isTpl" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jeekhan.wx.model.WXMsgLog">
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, from_user, incout, msg_type, event_type, create_time, status, resp_id
+    id, from_user, inout, msg_type, event_type, is_mass,is_tpl,create_time, status, resp_id
   </sql>
   <sql id="Blob_Column_List">
     content
@@ -31,13 +33,13 @@
   </select>
   
 
-  <insert id="insert" parameterType="com.jeekhan.wx.model.WXMsgLog">
-    insert into tb_wxmsg_log (id, from_user, incout, 
-      msg_type, event_type, create_time, 
+  <insert id="insert" parameterType="com.jeekhan.wx.model.WXMsgLog" keyProperty="id" useGeneratedKeys="true">
+    insert into tb_wxmsg_log (id, from_user, inout, 
+      msg_type, event_type, is_mass,is_tpl,create_time, 
       status, resp_id, content
       )
-    values (#{id,jdbcType=INTEGER}, #{fromUser,jdbcType=VARCHAR}, #{incout,jdbcType=CHAR}, 
-      #{msgType,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{id,jdbcType=INTEGER}, #{fromUser,jdbcType=VARCHAR}, #{inout,jdbcType=CHAR}, 
+      #{msgType,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, #{isMass,jdbcType=CHAR},#{isTpl,jdbcType=CHAR},#{createTime,jdbcType=TIMESTAMP}, 
       #{status,jdbcType=CHAR}, #{respId,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR}
       )
   </insert>
@@ -48,8 +50,8 @@
       <if test="fromUser != null">
         from_user = #{fromUser,jdbcType=VARCHAR},
       </if>
-      <if test="incout != null">
-        incout = #{incout,jdbcType=CHAR},
+      <if test="inout != null">
+        inout = #{inout,jdbcType=CHAR},
       </if>
       <if test="msgType != null">
         msg_type = #{msgType,jdbcType=VARCHAR},
@@ -57,6 +59,12 @@
       <if test="eventType != null">
         event_type = #{eventType,jdbcType=VARCHAR},
       </if>
+      <if test="isMass != null">
+        is_mass = #{isMass,jdbcType=VARCHAR},
+      </if>
+       <if test="isTpl != null">
+        is_tpl = #{isTpl,jdbcType=VARCHAR},
+      </if>           
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -88,6 +96,12 @@
   <if test="msg_type != null">
    and msg_type = #{msgType}
   </if>
+  <if test="isMass != null">
+    is_mass = #{isMass,jdbcType=VARCHAR},
+  </if>
+   <if test="isTpl != null">
+    is_tpl = #{isTpl,jdbcType=VARCHAR},
+  </if>   
   <if test="event_type != null">
    and event_type = #{eventType}
   </if>
@@ -118,6 +132,12 @@
   <if test="event_type != null">
    and event_type = #{eventType}
   </if>
+  <if test="isMass != null">
+    is_mass = #{isMass,jdbcType=VARCHAR},
+  </if>
+   <if test="isTpl != null">
+    is_tpl = #{isTpl,jdbcType=VARCHAR},
+  </if> 
   <if test="status != null">
    and `status` in (#{status})
   </if>

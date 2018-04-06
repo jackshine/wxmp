@@ -90,7 +90,7 @@ public class KFAccountHandle {
 	 * 调用示例：使用curl命令，用FORM表单方式上传一个多媒体文件，curl命令的具体用法请自行了解
 	 * http请求方式: POST/FORM
      * http://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?access_token=ACCESS_TOKEN&kf_account=KFACCOUNT
-     * @return
+     * @return {"errcode" : 0,"errmsg" : "ok"}
 	 * @throws JSONException 
 	 */
 	public  JSONObject uploadHeadImg(String account,File headJpgImg) throws JSONException{

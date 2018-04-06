@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeekhan.wx.mapper.MediaMaterialMapper">
+  <resultMap id="BaseResultMap" type="com.jeekhan.wx.model.MediaMaterial">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="media_type" jdbcType="VARCHAR" property="mediaType" />
+    <result column="is_temp" jdbcType="CHAR" property="isTemp" />
+    <result column="media_id" jdbcType="VARCHAR" property="mediaId" />
+    <result column="media_url" jdbcType="VARCHAR" property="mediaUrl" />
+    <result column="is_news_img" jdbcType="CHAR" property="isNewsImg" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="update_user" jdbcType="INTEGER" property="updateUser" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jeekhan.wx.model.MediaMaterial">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, media_type, is_temp, media_id, media_url, is_news_img, update_time, status, update_user
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_media_material
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from tb_media_material
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.jeekhan.wx.model.MediaMaterial" keyProperty="id" useGeneratedKeys="true">
+    insert into tb_media_material (id, media_type, is_temp, 
+      media_id, media_url, is_news_img, 
+      update_time, status, update_user, 
+      content)
+    values (#{id,jdbcType=INTEGER}, #{mediaType,jdbcType=VARCHAR}, #{isTemp,jdbcType=CHAR}, 
+      #{mediaId,jdbcType=VARCHAR}, #{mediaUrl,jdbcType=VARCHAR}, #{isNewsImg,jdbcType=CHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=CHAR}, #{updateUser,jdbcType=INTEGER}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+
+  
+  <update id="updateById" parameterType="com.jeekhan.wx.model.MediaMaterial">
+    update tb_media_material
+    <set>
+      <if test="mediaType != null">
+        media_type = #{mediaType,jdbcType=VARCHAR},
+      </if>
+      <if test="isTemp != null">
+        is_temp = #{isTemp,jdbcType=CHAR},
+      </if>
+      <if test="mediaId != null">
+        media_id = #{mediaId,jdbcType=VARCHAR},
+      </if>
+      <if test="mediaUrl != null">
+        media_url = #{mediaUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isNewsImg != null">
+        is_news_img = #{isNewsImg,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+</mapper>
+
+

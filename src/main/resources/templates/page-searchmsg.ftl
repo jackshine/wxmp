@@ -12,21 +12,21 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="css/font-awesome.min.css" rel="stylesheet">
-    <link href="css/templatemo-style.css" rel="stylesheet">
+    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
+    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
     
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
 <div class="container">
-  <#include "/sysTopMenu.ftl" encoding="utf8"> 
+  <#include "/page-top-menu.ftl" encoding="utf8"> 
   <div class="row" style="margin-top:5px">
       <div class="panel panel-info">
         <div class="panel-heading" style="margin:0">
     	  	  <input type="hidden" name="begin" value="0">
     	  	  <input type="hidden" name="pageSize" value="20">
     	  	  <input type="hidden" name="condParams" value="">
-    	  	  <form class="form-inline" role="form">
+    	  	  <form class="form-inline" role="form" id="searchForm">
     	  	    <div class="row" style="margin-top:0px">
 	          <div class="col-xs-3 form-group" style="padding-left:0">
 	            <label for="name" class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">消息方向</label>
@@ -101,7 +101,7 @@
 	          </div> 
 	          <div class="col-xs-3 form-group" style="padding-left:0">
                 <button type="button" class="btn btn-info" id="save" style="margin-left:20px">&nbsp;&nbsp;查 询&nbsp;&nbsp;</button>
-                <button type="button" class="btn btn-warning" id="reset" style="margin-left:20px">&nbsp;&nbsp;重 置&nbsp;&nbsp; </button>
+                <button type="reset" class="btn btn-warning" id="reset" style="margin-left:20px">&nbsp;&nbsp;重 置&nbsp;&nbsp; </button>
 	          </div>
 	        </div>
 	      </form>

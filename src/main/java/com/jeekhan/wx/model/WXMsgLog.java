@@ -5,91 +5,112 @@ import java.util.Date;
 public class WXMsgLog {
     private Integer id;
 
-    private String fromUser;
+	private String fromUser;
 
-    private String incout;
+	private String inout;
 
-    private String msgType;
+	private String msgType;
 
-    private String eventType;
+	private String eventType;
 
-    private Date createTime;
+	private String isMass;
 
-    private String status;
+	private String isTpl;
 
-    private Integer respId;
+	private Date createTime;
 
-    private String content;
+	private String status;
 
-    public Integer getId() {
-        return id;
-    }
+	private Integer respId;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	private String content;
 
-    public String getFromUser() {
-        return fromUser;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void setFromUser(String fromUser) {
-        this.fromUser = fromUser == null ? null : fromUser.trim();
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public String getIncout() {
-        return incout;
-    }
+	public String getFromUser() {
+		return fromUser;
+	}
 
-    public void setIncout(String incout) {
-        this.incout = incout == null ? null : incout.trim();
-    }
+	public void setFromUser(String fromUser) {
+		this.fromUser = fromUser == null ? null : fromUser.trim();
+	}
 
-    public String getMsgType() {
-        return msgType;
-    }
+	public String getInout() {
+		return inout;
+	}
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType == null ? null : msgType.trim();
-    }
+	public void setInout(String inout) {
+		this.inout = inout == null ? null : inout.trim();
+	}
 
-    public String getEventType() {
-        return eventType;
-    }
+	public String getMsgType() {
+		return msgType;
+	}
 
-    public void setEventType(String eventType) {
-        this.eventType = eventType == null ? null : eventType.trim();
-    }
+	public void setMsgType(String msgType) {
+		this.msgType = msgType == null ? null : msgType.trim();
+	}
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+	public String getEventType() {
+		return eventType;
+	}
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+	public void setEventType(String eventType) {
+		this.eventType = eventType == null ? null : eventType.trim();
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getIsMass() {
+		return isMass;
+	}
 
-    public void setStatus(String status) {
-        this.status = status == null ? null : status.trim();
-    }
+	public void setIsMass(String isMass) {
+		this.isMass = isMass == null ? null : isMass.trim();
+	}
 
-    public Integer getRespId() {
-        return respId;
-    }
+	public String getIsTpl() {
+		return isTpl;
+	}
 
-    public void setRespId(Integer respId) {
-        this.respId = respId;
-    }
+	public void setIsTpl(String isTpl) {
+		this.isTpl = isTpl == null ? null : isTpl.trim();
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public Date getCreateTime() {
+		return createTime;
+	}
 
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
-    }
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status == null ? null : status.trim();
+	}
+
+	public Integer getRespId() {
+		return respId;
+	}
+
+	public void setRespId(Integer respId) {
+		this.respId = respId;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content == null ? null : content.trim();
+	}
+    
 }

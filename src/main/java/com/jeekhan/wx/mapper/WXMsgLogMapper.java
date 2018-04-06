@@ -7,6 +7,9 @@ import java.util.Map;
 import com.jeekhan.wx.model.WXMsgLog;
 
 public interface WXMsgLogMapper {
+	
+	int deleteById(Integer id);
+
 	int insert(WXMsgLog record);
     
     WXMsgLog selectById(BigInteger id);
@@ -28,3 +31,4 @@ public interface WXMsgLogMapper {
     int countLatestMsg(Map<String,String> condParams);
     
 }
+

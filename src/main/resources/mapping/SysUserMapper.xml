@@ -11,47 +11,54 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="role_lvl" jdbcType="CHAR" property="roleLvl" />
     <result column="status" jdbcType="CHAR" property="status" />
+    <result column="open_kf" jdbcType="CHAR" property="openKf" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="head_img" jdbcType="VARCHAR" property="headImg" />
+    <result column="kf_passwd" jdbcType="VARCHAR" property="kfPasswd" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, username, email, sex, passwd, introduce, update_time, role_lvl, status
+    id, username, email, sex, passwd, introduce, update_time, role_lvl, status, open_kf, 
+    nickname, head_img,kf_passwd
   </sql>
   
-  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tb_sys_user
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER} and status = '1'
   </select>
   
   <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tb_sys_user
-    where username = #{username,jdbcType=INTEGER}
+    where username = #{username,jdbcType=VARCHAR} and status = '1' 
   </select>
   
-  <delete id="deleteById" parameterType="java.lang.Integer">
-    delete from tb_sys_user
-    where id = #{id,jdbcType=INTEGER}
+  <!-- 逻辑删除用户 -->
+  <delete id="destroyUser" parameterType="java.lang.String">
+    update tb_sys_user
+    set status = 'D'
+    where username = #{username,jdbcType=VARCHAR}
   </delete>
   
-  <insert id="insert" parameterType="com.jeekhan.wx.model.SysUser">
+  <insert id="insert" parameterType="com.jeekhan.wx.model.SysUser" keyProperty="id" useGeneratedKeys="true">
     insert into tb_sys_user (id, username, email, 
       sex, passwd, introduce, 
-      update_time, role_lvl, status
+      update_time, role_lvl, status, 
+      open_kf, nickname, head_img,kf_passwd
       )
     values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{sex,jdbcType=CHAR}, #{passwd,jdbcType=VARCHAR}, #{introduce,jdbcType=VARCHAR}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{roleLvl,jdbcType=CHAR}, #{status,jdbcType=CHAR}
+      #{updateTime,jdbcType=TIMESTAMP}, #{roleLvl,jdbcType=CHAR}, #{status,jdbcType=CHAR}, 
+      #{openKf,jdbcType=CHAR}, #{nickname,jdbcType=VARCHAR}, #{headImg,jdbcType=VARCHAR},#{kfPasswd,jdbcType=VARCHAR}
       )
   </insert>
-
+  
+ 
   <update id="updateById" parameterType="com.jeekhan.wx.model.SysUser">
     update tb_sys_user
     <set>
-      <if test="username != null">
-        username = #{username,jdbcType=VARCHAR},
-      </if>
       <if test="email != null">
         email = #{email,jdbcType=VARCHAR},
       </if>
@@ -73,8 +80,36 @@
       <if test="status != null">
         status = #{status,jdbcType=CHAR},
       </if>
+      <if test="openKf != null">
+        open_kf = #{openKf,jdbcType=CHAR},
+      </if>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="headImg != null">
+        head_img = #{headImg,jdbcType=VARCHAR},
+      </if>
+      <if test="kfPasswd != null">
+        kf_passwd = #{kfPasswd,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <select id="selectUsers" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_sys_user
+    <where>
+     <if test="status != null">
+     and status = '1'
+     </if>
+     <if test="id != null">
+     and id = #{id,jdbcType=INTEGER}
+     </if>
+    </where>
+    order by update_time desc
+  </select>
+
 </mapper>
+

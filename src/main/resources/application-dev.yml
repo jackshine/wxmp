@@ -42,7 +42,7 @@ busi:
   
 ######系统参数############  
 sys:
-  tmp-file-dir: '/wxmp/tmp'
-  qrcode-file-dir: '/wxmp/qrcode'
-  material-file-dir: '/wxmp/material'
-  
+  tmp-file-dir: '/Users/jeekhan/wxmp/tmp/'
+  qrcode-file-dir: '/Users/jeekhan/wxmp/qrcode/'
+  material-file-dir: '/Users/jeekhan/wxmp/material/'
+  kf-headimg-dir: '/Users/jeekhan/wxmp/headimg/'

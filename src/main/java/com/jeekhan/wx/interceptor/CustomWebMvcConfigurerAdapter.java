@@ -30,6 +30,9 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter{
         registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/mass/**");
         registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/wxmenu/**");
         registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/tplmsg/**");
+        registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/material/**");
+        registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/sys/**");
+        registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/searchmsg/**");
         
         registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/index");
         registry.addInterceptor(getLogInInterceptor()).addPathPatterns("/logout");

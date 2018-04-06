@@ -12,14 +12,14 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="css/font-awesome.min.css" rel="stylesheet">
-    <link href="css/templatemo-style.css" rel="stylesheet">
+    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
+    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
     
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
 <div class="container">
-  <#include "/sysTopMenu.ftl" encoding="utf8"> 
+  <#include "/page-top-menu.ftl" encoding="utf8"> 
   <div class="row" style="padding:5px 0 0 0;">
 	<!-- 左面功能菜单 -->
     <div class="col-xs-3" style="padding-left:0">
