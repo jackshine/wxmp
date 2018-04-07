@@ -20,7 +20,10 @@ spring:
 mybatis:
   mapper-locations: classpath:/mapping/*.xml
   type-aliases-package: com.jeekhan.wxmp.model
-
+ 
+logging:
+  level:
+    com.jeekhan.wx.mapper: DEBUG
 ######微信参数############
 wx:
 #userId 公众号

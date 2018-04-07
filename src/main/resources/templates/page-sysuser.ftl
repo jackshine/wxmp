@@ -40,10 +40,11 @@
       <div class="panel-body">
         <table class="table table-bordered table-hover ">
           <thead>
-   	        <tr><th width="15%">用户名称</th><th width="15%">客服昵称</th><th width="25%">邮箱</th><th width="8%">用户级别</th><th width="8%">状态</th><th width="10%">是否开通客服</th><th width="25%">更新时间</th></tr>
+   	        <tr><th width="3%"><th width="15%">用户名称</th><th width="15%">客服昵称</th><th width="20%">邮箱</th><th width="8%">用户级别</th><th width="8%">状态</th><th width="10%">是否开通客服</th><th width="25%">更新时间</th></tr>
           </thead>
           <tbody> 
-            <tr v-for="user in users" v-on:click="select_username = user.username" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">
+            <tr v-for="(user,index) in users" v-on:click="select_username = user.username" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">
+              <td>{{index+1}}</td>
               <td>{{user.username}}</td>
               <td>{{user.nickname}}</td>
               <td>{{user.email}}</td>
@@ -72,7 +73,7 @@
 			 if(code == '1'){
 				 return '正常';
 			 }else if(code == 'D'){
-				 return 'D：已注销';
+				 return '已注销';
 			 }
 		 },
 		 getOpenKF:function(code){

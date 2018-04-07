@@ -17,7 +17,7 @@
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, from_user, inout, msg_type, event_type, is_mass,is_tpl,create_time, status, resp_id
+    id, from_user, `inout`, msg_type, event_type, is_mass,is_tpl,create_time, `status`, resp_id
   </sql>
   <sql id="Blob_Column_List">
     content
@@ -34,9 +34,9 @@
   
 
   <insert id="insert" parameterType="com.jeekhan.wx.model.WXMsgLog" keyProperty="id" useGeneratedKeys="true">
-    insert into tb_wxmsg_log (id, from_user, inout, 
+    insert into tb_wxmsg_log (id, from_user, `inout`, 
       msg_type, event_type, is_mass,is_tpl,create_time, 
-      status, resp_id, content
+      `status`, resp_id, content
       )
     values (#{id,jdbcType=INTEGER}, #{fromUser,jdbcType=VARCHAR}, #{inout,jdbcType=CHAR}, 
       #{msgType,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, #{isMass,jdbcType=CHAR},#{isTpl,jdbcType=CHAR},#{createTime,jdbcType=TIMESTAMP}, 
@@ -51,7 +51,7 @@
         from_user = #{fromUser,jdbcType=VARCHAR},
       </if>
       <if test="inout != null">
-        inout = #{inout,jdbcType=CHAR},
+        `inout` = #{inout,jdbcType=CHAR},
       </if>
       <if test="msgType != null">
         msg_type = #{msgType,jdbcType=VARCHAR},
@@ -81,6 +81,12 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
+   <update id="updateRespInfo" parameterType="map">
+    update tb_wxmsg_log
+    set resp_id = #{respId,jdbcType=INTEGER},status='2'
+    where id = #{recvId,jdbcType=INTEGER}
+  </update>
+  
   <!-- 统计最近48小时内的消息 -->
   <select id="countLatestMsg" parameterType="map" resultType="int">
   select count(1)
@@ -91,18 +97,18 @@
   	and from_user = #{fromUser} 
   </if>
   <if test="inout != null">
-   and inout = #{inout}
+   and `inout` = #{inout}
   </if>
-  <if test="msg_type != null">
+  <if test="msgType != null">
    and msg_type = #{msgType}
   </if>
   <if test="isMass != null">
-    is_mass = #{isMass,jdbcType=VARCHAR},
+   and is_mass = #{isMass,jdbcType=CHAR}
   </if>
    <if test="isTpl != null">
-    is_tpl = #{isTpl,jdbcType=VARCHAR},
+   and is_tpl = #{isTpl,jdbcType=CHAR}
   </if>   
-  <if test="event_type != null">
+  <if test="eventType != null">
    and event_type = #{eventType}
   </if>
   <if test="status != null">
@@ -112,7 +118,7 @@
   </select>
   
   <!-- 获取最近48小时内的消息 -->
-  <select id="selectLatestMsg" parameterType="map" resultType="int">
+  <select id="selectLatestMsg" parameterType="map" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
     ,
@@ -124,25 +130,100 @@
   	and from_user = #{fromUser} 
   </if>
   <if test="inout != null">
-   and inout = #{inout}
+   and `inout` = #{inout}
   </if>
-  <if test="msg_type != null">
+  <if test="msgType != null">
    and msg_type = #{msgType}
   </if>
-  <if test="event_type != null">
+  <if test="eventType != null">
    and event_type = #{eventType}
   </if>
   <if test="isMass != null">
-    is_mass = #{isMass,jdbcType=VARCHAR},
+   and is_mass = #{isMass,jdbcType=CHAR}
   </if>
    <if test="isTpl != null">
-    is_tpl = #{isTpl,jdbcType=VARCHAR},
+   and is_tpl = #{isTpl,jdbcType=CHAR}
   </if> 
   <if test="status != null">
    and `status` in (#{status})
   </if>
   </where> 
+  order by create_time desc 
   </select>
   
+    <!-- 统计消息条数 -->
+  <select id="countMsgs" parameterType="map" resultType="int">
+    select count(1)
+    from tb_wxmsg_log 
+    <where>
+	<if test="params.fromUser != null">
+	  and from_user = #{params.fromUser} 
+	</if>
+	<if test="params.inout != null">
+	  and `inout` = #{params.inout}
+	</if>
+	<if test="params.msgType != null">
+	  and msg_type = #{params.msgType}
+	</if>
+	<if test="params.eventType != null">
+	  and event_type = #{params.eventType}
+	</if>
+	<if test="params.isMass != null">
+	  and is_mass = #{params.isMass,jdbcType=CHAR}
+	</if>
+	 <if test="params.isTpl != null">
+	  and is_tpl = #{params.isTpl,jdbcType=CHAR}
+	</if> 
+	<if test="params.status != null">
+	 and `status` = (#{params.status,jdbcType=CHAR})
+	</if>
+	<if test="params.beginTime != null">
+	 and create_time &gt;= #{params.beginTime}
+	</if>
+	<if test="params.endTime != null"> 
+	 and create_time &lt;= #{params.endTime} 
+	</if>
+  </where> 
+   
+  </select>
   
+  <!-- 根据条件查询的消息 -->
+  <select id="selectMsgs" parameterType="map" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_wxmsg_log 
+    <where>
+	<if test="params.fromUser != null">
+	  and from_user = #{params.fromUser} 
+	</if>
+	<if test="params.inout != null">
+	  and `inout` = #{params.inout}
+	</if>
+	<if test="params.msgType != null">
+	  and msg_type = #{params.msgType}
+	</if>
+	<if test="params.eventType != null">
+	  and event_type = #{params.eventType}
+	</if>
+	<if test="params.isMass != null">
+	  and is_mass = #{params.isMass,jdbcType=CHAR}
+	</if>
+	 <if test="params.isTpl != null">
+	  and is_tpl = #{params.isTpl,jdbcType=CHAR}
+	</if> 
+	<if test="params.status != null">
+	 and `status` = (#{params.status,jdbcType=CHAR})
+	</if>
+	<if test="params.beginTime != null">
+	 and create_time &gt;= #{params.beginTime}
+	</if>
+	<if test="params.endTime != null"> 
+	 and create_time &lt;= #{params.endTime} 
+	</if>
+  </where> 
+   order by create_time desc
+   limit #{pageCond.begin},#{pageCond.pageSize}
+  </select>
 </mapper>

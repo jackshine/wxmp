@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeekhan.wx.mapper.WXQRCodeMapper">
+  <resultMap id="BaseResultMap" type="com.jeekhan.wx.model.WXQRCode">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="is_perm" jdbcType="CHAR" property="isPerm" />
+    <result column="scene_id" jdbcType="INTEGER" property="sceneId" />
+    <result column="ticket" jdbcType="VARCHAR" property="ticket" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="expire_seconds" jdbcType="INTEGER" property="expireSeconds" />
+    <result column="local_img_url" jdbcType="VARCHAR" property="localImgUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, is_perm, scene_id, ticket, url, expire_seconds, local_img_url, create_time
+  </sql>
+  
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_wx_qrcode
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectBySceneId" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_wx_qrcode
+    where scene_id = #{sceneId,jdbcType=INTEGER} and is_perm = #{isPerm,jdbcType=CHAR}
+  </select>
+ 
+   <select id="selectByTicket" parameterType="string" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_wx_qrcode
+    where ticket = #{ticket,jdbcType=VARCHAR}
+    order by create_time desc 
+  </select>
+   
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from tb_wx_qrcode
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" keyProperty="id" parameterType="com.jeekhan.wx.model.WXQRCode" useGeneratedKeys="true">
+    insert into tb_wx_qrcode (id, is_perm, scene_id, 
+      ticket, url, expire_seconds, 
+      local_img_url, create_time)
+    values (#{id,jdbcType=INTEGER}, #{isPerm,jdbcType=CHAR}, #{sceneId,jdbcType=INTEGER}, 
+      #{ticket,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{expireSeconds,jdbcType=INTEGER}, 
+      #{localImgUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <update id="updateById" parameterType="com.jeekhan.wx.model.WXQRCode">
+    update tb_wx_qrcode
+    <set>
+      <if test="isPerm != null">
+        is_perm = #{isPerm,jdbcType=CHAR},
+      </if>
+      <if test="sceneId != null">
+        scene_id = #{sceneId,jdbcType=INTEGER},
+      </if>
+      <if test="ticket != null">
+        ticket = #{ticket,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="expireSeconds != null">
+        expire_seconds = #{expireSeconds,jdbcType=INTEGER},
+      </if>
+      <if test="localImgUrl != null">
+        local_img_url = #{localImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+ 
+   <select id="countAll" parameterType="map" resultType="int">
+    select count(1)
+    from tb_wx_qrcode
+    <where>
+      <if test="params.isPerm != null">
+       and is_perm = #{params.isPerm,jdbcType=CHAR}
+      </if>
+      <if test="params.sceneId != null">
+       and scene_id = #{params.sceneId,jdbcType=INTEGER}
+      </if>
+      <if test="params.ticket != null">
+       and ticket like concat(concat('%',#{params.ticket,jdbcType=VARCHAR}),'%')
+      </if>
+      <if test="params.isAvail == '0'.toString()"><!-- 不可用 -->
+       and (expire_seconds &gt; 0 and ((now()-create_time) &gt;= expire_seconds))
+      </if>
+      <if test="params.isAvail == '1'.toString()"><!-- 可用 -->
+       and ((expire_seconds &gt; 0 and ((now()-create_time) &lt; expire_seconds)) or expire_seconds = -1)
+      </if>
+	  <if test="params.beginTime != null">
+	   and create_time &gt;= #{params.beginTime}
+	  </if>
+	  <if test="params.endTime != null"> 
+	   and create_time &lt;= #{params.endTime} 
+	  </if>
+    </where>
+  </select>
+   
+  <select id="selectAll" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_wx_qrcode
+    <where>
+      <if test="params.isPerm != null">
+       and is_perm = #{params.isPerm,jdbcType=CHAR}
+      </if>
+      <if test="params.sceneId != null">
+       and scene_id = #{params.sceneId,jdbcType=INTEGER}
+      </if>
+      <if test="params.ticket != null">
+       and ticket like concat(concat('%',#{params.ticket,jdbcType=VARCHAR}),'%')
+      </if>
+      <if test="params.isAvail == '0'.toString()"><!-- 不可用 -->
+       and (expire_seconds &gt; 0 and ((now()-create_time) &gt;= expire_seconds))
+      </if>
+      <if test="params.isAvail == '1'.toString()"><!-- 可用 -->
+       and ((expire_seconds &gt; 0 and ((now()-create_time) &lt; expire_seconds)) or expire_seconds = -1)
+      </if>
+	  <if test="params.beginTime != null">
+	   and create_time &gt;= #{params.beginTime}
+	  </if>
+	  <if test="params.endTime != null"> 
+	   and create_time &lt;= #{params.endTime} 
+	  </if>
+    </where>
+    order by create_time desc 
+    limit #{pageCond.begin},#{pageCond.pageSize}
+  </select>
+
+</mapper>
