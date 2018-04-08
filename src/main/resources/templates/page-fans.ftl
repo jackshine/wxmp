@@ -18,7 +18,7 @@
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
-<div class="container">
+<div class="container" id="container">
   <#include "/page-top-menu.ftl" encoding="utf8"> 
   <div class="row" style="padding:5px 0 0 0;">
 	<!-- 左面功能菜单 -->
@@ -42,21 +42,21 @@
       <div class="row" id="tagMgr" style="display:none;padding:0 5px"> 
         <div class="panel panel-info">
           <div class="panel-heading" style="margin:0">
-            <button type="button" class="btn btn-primary" id="save" style="margin-left:20px">&nbsp;&nbsp;创建标签&nbsp;&nbsp;</button>
-            <button type="button" class="btn btn-primary" id="save" style="margin-left:20px">&nbsp;&nbsp;更新标签&nbsp;&nbsp;</button>
-            <button type="button" class="btn btn-warning" id="save" style="margin-left:20px">&nbsp;&nbsp;删除标签&nbsp;&nbsp;</button>
-            <button type="button" class="btn btn-info" id="save" style="margin-left:20px">&nbsp;&nbsp;查询所有&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-info" style="margin-left:20px" @click="queryAllTags">&nbsp;&nbsp;查询所有&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-primary" style="margin-left:20px" @click="createTag">&nbsp;&nbsp;创建标签&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-primary" style="margin-left:20px" @click="updateTag">&nbsp;&nbsp;更新标签&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-warning" style="margin-left:20px" @click="deleteTag">&nbsp;&nbsp;删除标签&nbsp;&nbsp;</button>
           </div>
           <div class="panel-body">
-            <table class="table table-striped  table-bordered table-hover ">
+            <table class="table table-bordered table-hover ">
               <thead>
-   	            <tr><th width="25%">标签ID</th><th width="50%">标签名称</th><th width="25%">粉丝数量</th></tr>
+   	            <tr><th width="15%">标签ID</th><th width="35%">标签名称</th><th width="50%">标签名称</th></tr>
               </thead>
               <tbody> 
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                <tr v-for="item in tagList" @click="selected.tagId=item.tagId" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">
+                  <td>{{item.tagId}}</td>
+                  <td>{{item.tagName}}</td>
+                  <td>{{item.tagDesc}}</td>
                 </tr>
               </tbody>
             </table>
@@ -132,7 +132,162 @@
   </div>  
   
 </div>
+<script>
+var container = new Vue({
+	el:'#container',
+	data:{
+		selected:{
+			tagId:'',
+		},
+		tagList:[]
+	},
+	methods:{
+		queryAllTags: function(){
+			getAllTags();
+			
+		},
+		createTag:function(){
+			$('#tagMgrModal').modal('show');
+			tagMgrVue.tagId = '';
+			tagMgrVue.tagName = '';
+			tagMgrVue.tagDesc = '';
+		},
+		updateTag: function(){
+			if(!this.selected.tagId){
+				 alert("请选择要修改的标签！");
+				 return;
+			 }
+			 $("#tagMgrModal").modal('show');
+			 for(var i=0;i<this.tagList.length;i++){
+				 var u = this.tagList[i];
+				 if(u.tagId == this.selected.tagId){
+					 tagMgrVue.tagId = u.tagId;
+					 tagMgrVue.tagName = u.tagName;
+					 tagMgrVue.tagDesc = u.tagDesc;
+				 }
+			 }
+		},
+		deleteTag: function(){
+			if(!this.selected.tagId){
+				 alert("请选择要删除的标签！");
+				 return;
+			 }
+			 if(confirm("如果删除则将收回用户身上的标签信息，您确定是要删除标签【" + this.selected.tagId + "】吗？")){
+				 $.ajax({
+						url: '${contextPath}/fans/deleteTag',
+						data: {'tagId':this.selected.tagId},
+						success: function(jsonRet,status,xhr){
+							if(jsonRet){
+								if(0 == jsonRet.errcode){
+									alert("标签【" + container.selected.tagId + "】已成功删除！");
+									getAllTags();
+								}else{//出现逻辑错误
+									alert(jsonRet.errmsg);
+								}
+							}else{
+								alert('系统数据访问失败！')
+							}
+						},
+						dataType: 'json'
+					});
+		 	}
+		}
+	}
+});
+function getAllTags(){
+	 $.ajax({
+			url: '${contextPath}/fans/getAllTags',
+			data: {},
+			success: function(jsonRet,status,xhr){
+				if(jsonRet){
+					if(0 == jsonRet.errcode){
+						container.tagList = jsonRet.data;
+					}else{//出现逻辑错误
+						alert(jsonRet.errmsg);
+					}
+				}else{
+					alert('系统数据访问失败！')
+				}
+			},
+			dataType: 'json'
+		});
+}
+</script>
 
+<!-- 创建标签模态对话框（Modal） -->
+<div class="modal fade " id="tagMgrModal" tabindex="-1" role="dialog" aria-labelledby="tagMgrModalLabel" aria-hidden="true" data-backdrop="static">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">× </button>
+            <h4 class="modal-title" id="tagMgrModalLabel">标签管理</h4>
+         </div>
+         <div class="modal-body">
+            <form class="form-horizontal" method ="post" action="add" role="form" >
+               <div class="form-group">
+               </div>
+			   <div class="form-group">
+			      <label class="col-sm-2 control-label">标签名<span style="color:red" >*</span></label>
+			      <div class="col-sm-10">
+			         <input class="form-control" v-model.trim="tagName" type="text" maxlength=30 required placeholder="请输入标签名(3-30字符)..." >
+			      </div>
+			   </div>
+			   <div class="form-group">
+			      <label class="col-sm-2 control-label">标签描述</label>
+			      <div class="col-sm-10">
+			         <textarea class="form-control" v-model.trim="tagDesc" rows= 10 maxlength=600 placeholder="请输入标签描述..." ></textarea>
+			      </div>
+			   </div>
+			</form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-primary" v-on:click="submit">提交</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+         </div>
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+var tagMgrVue = new Vue({
+	el: '#tagMgrModal',
+	  data: {
+		  tagId:'',
+		  tagName: '',
+		  tagDesc:''
+	  },
+	  methods: {
+		  submit:function(){
+				if(!this.tagName || this.tagName.length<3 || this.tagName.length>30){
+					alert("标签名长度为3-30个字符！");
+					return false;
+				}
+				if(!this.tagDesc && this.tagDesc.length>600){
+					alert("标签描述最长为600个字符！");
+					return false;
+				}
+				$.ajax({
+					url: '${contextPath}/fans/' + (this.tagId ? 'updateTag':'createTag'),
+					data: {'tagName':this.tagName,'tagDesc':this.tagDesc,'tagId':this.tagId},
+					success: function(jsonRet,status,xhr){
+						if(jsonRet){
+							if(0 == jsonRet.errcode){
+								alert("标签【" + tagMgrVue.tagName + "】已成功" + (tagMgrVue.tagId ? '修改':'添加') + "！！!");
+								$("#tagMgrModal").modal('hide');
+								getAllTags();	//重新获取所有标签
+							}else{//出现逻辑错误
+								alert(jsonRet.errmsg);
+							}
+						}else{
+							alert('系统数据访问失败！')
+						}
+					},
+					dataType: 'json'
+				});
+		  }
+	  }
+});
+
+</script>
 <#if errmsg??>
 <!-- 错误提示模态框（Modal） -->
 <div class="modal fade " id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorTitle" aria-hidden="false" data-backdrop="static">

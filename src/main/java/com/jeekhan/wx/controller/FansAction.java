@@ -3,19 +3,30 @@ package com.jeekhan.wx.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jeekhan.wx.api.UserMgrHandle;
+import com.jeekhan.wx.dto.Operator;
+import com.jeekhan.wx.model.FansTag;
+import com.jeekhan.wx.service.FansBasicService;
+import com.jeekhan.wx.service.FansTagService;
 /**
  * 微信用户管理服务控制类
  * 供业务服务器进行调用
- * 1、用户注册、注销服务通过关注事件回调；
+ * 1、用户添加、注销、更新；
  * 2、用户标签管理:不能和其他标签重名,标签名长度不超过30个字节，最多可以创建100个标签；
  * 3、设置用户备注名
  * 4、获取用户基本信息
@@ -27,6 +38,11 @@ import com.jeekhan.wx.api.UserMgrHandle;
 @Controller
 @RequestMapping("/fans")
 public class FansAction {
+	
+	@Autowired
+	private FansTagService  fansTagService;
+	@Autowired
+	private FansBasicService fansBasicService;
 	
 	/**
 	 * 获取粉丝用户管理主页
@@ -45,35 +61,36 @@ public class FansAction {
 	 * @return { "errcode:0,errmsg:"ok","tag":{ "id":134,"name":"广东"} }
 	 * @throws JSONException 
 	 */
-	@RequestMapping("/createUserTag")
-	public JSONObject createUserTag(String tagName) throws JSONException {
-		if(tagName == null || tagName.trim().length() ==0 ) {
-			JSONObject jsonRet = new JSONObject();
-			jsonRet.put("errcode", "-777");
-			jsonRet.put("errmsg", "标签名称不可为空！");
-			return jsonRet;
-		}
-		tagName = tagName.trim();
-		if(tagName.length() > 30) {
-			JSONObject jsonRet = new JSONObject();
-			jsonRet.put("errcode", "-888");
-			jsonRet.put("errmsg", "标签名称长度超过30个字符！");
-			return jsonRet;
-		}
+	@RequestMapping("/createTag")
+	@ResponseBody
+	public String createTag(@Valid FansTag fansTag,BindingResult result,Operator operator) throws JSONException {
+		JSONObject jsonRet = new JSONObject();
 		try {
-			JSONObject jsonRet = UserMgrHandle.addTag(tagName);
+			//信息验证结果处理
+			if(result.hasErrors()){
+				StringBuilder sb = new StringBuilder();
+				List<ObjectError> list = result.getAllErrors();
+				for(ObjectError e :list){
+					//String filed = e.getCodes()[0].substring(e.getCodes()[0].lastIndexOf('.')+1);
+					sb.append(e.getDefaultMessage());
+				}
+				jsonRet.put("errmsg", sb.toString());
+				jsonRet.put("errcode", -666);
+				return jsonRet.toString();
+			}
+			jsonRet = UserMgrHandle.addTag(fansTag.getTagName());
 			if(!jsonRet.has("errcode")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
+				fansTag.setTagId(jsonRet.getJSONObject("tag").getInt("id"));
+				this.fansTagService.add(fansTag);
 			}
-			return jsonRet;
 		} catch (Exception e) {
 			e.printStackTrace();
-			JSONObject jsonRet = new JSONObject();
 			jsonRet.put("errcode", "-666");
 			jsonRet.put("errmsg", "系统出现异常，异常信息：" + e.getMessage());
-			return jsonRet;
 		}
+		return jsonRet.toString();
 	}
 	
 	/**
@@ -82,21 +99,21 @@ public class FansAction {
 	 * @throws JSONException
 	 */
 	@RequestMapping("/getAllTags")
-	public JSONObject getAllTags() throws JSONException {
+	@ResponseBody
+	public String getAllTags() throws JSONException {
+		JSONObject jsonRet = new JSONObject();
 		try {
-			JSONObject jsonRet = UserMgrHandle.getAllTags();
-			if(!jsonRet.has("errcode")) {
-				jsonRet.put("errcode", 0);
-				jsonRet.put("errmsg", "ok");
-			}
-			return jsonRet;
+			List<FansTag> list = this.fansTagService.getAll();
+			jsonRet.put("errcode", 0);
+			jsonRet.put("errmsg", "ok");
+			jsonRet.put("data", new JSONArray(list));
 		} catch (Exception e) {
 			e.printStackTrace();
-			JSONObject jsonRet = new JSONObject();
+			
 			jsonRet.put("errcode", "-666");
 			jsonRet.put("errmsg", "系统出现异常，异常信息：" + e.getMessage());
-			return jsonRet;
 		}
+		return jsonRet.toString();
 	}
 	
 	/**
@@ -107,30 +124,40 @@ public class FansAction {
 	 * @throws JSONException 
 	 */
 	@RequestMapping("/updateTag")
-	public JSONObject updateTag(String tagName,Integer tagId) throws JSONException {
-		if(tagName == null || tagName.trim().length() ==0 || tagId == null) {
-			JSONObject jsonRet = new JSONObject();
-			jsonRet.put("errcode", "-777");
-			jsonRet.put("errmsg", "标签名称与标签ID不可为空！");
-			return jsonRet;
-		}
-		tagName = tagName.trim();
-		if(tagName.length() > 30) {
-			JSONObject jsonRet = new JSONObject();
-			jsonRet.put("errcode", "-888");
-			jsonRet.put("errmsg", "标签名称长度超过30个字符！");
-			return jsonRet;
-		}
+	@ResponseBody
+	public String updateTag(@Valid FansTag fansTag,BindingResult result) throws JSONException {
+		JSONObject jsonRet = new JSONObject();
 		try {
-			JSONObject jsonRet = UserMgrHandle.updateTag(tagName, tagId);
-			return jsonRet;
+			if(fansTag.getTagId() == null) {
+				jsonRet.put("errmsg", "标签ID不可为空！");
+				jsonRet.put("errcode", -666);
+				return jsonRet.toString();
+			}
+			//信息验证结果处理
+			if(result.hasErrors()){
+				StringBuilder sb = new StringBuilder();
+				List<ObjectError> list = result.getAllErrors();
+				for(ObjectError e :list){
+					//String filed = e.getCodes()[0].substring(e.getCodes()[0].lastIndexOf('.')+1);
+					sb.append(e.getDefaultMessage());
+				}
+				jsonRet.put("errmsg", sb.toString());
+				jsonRet.put("errcode", -666);
+				return jsonRet.toString();
+			}
+			jsonRet = UserMgrHandle.updateTag(fansTag.getTagName(), fansTag.getTagId());
+			if(!jsonRet.has("errcode")) {
+				jsonRet.put("errcode", 0);
+				jsonRet.put("errmsg", "ok");
+				this.fansTagService.update(fansTag);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			JSONObject jsonRet = new JSONObject();
 			jsonRet.put("errcode", "-666");
 			jsonRet.put("errmsg", "系统出现异常，异常信息：" + e.getMessage());
-			return jsonRet;
+			
 		}
+		return jsonRet.toString();
 	}
 	/**
 	 * 删除标签
@@ -140,24 +167,29 @@ public class FansAction {
 	 * @throws JSONException
 	 */
 	@RequestMapping("/deleteTag")
-	public JSONObject deleteTag(Integer tagId) throws JSONException {
+	@ResponseBody
+	public String deleteTag(Integer tagId) throws JSONException {
+		JSONObject jsonRet = new JSONObject();
 		if(tagId == null) {
-			JSONObject jsonRet = new JSONObject();
 			jsonRet.put("errcode", "-777");
 			jsonRet.put("errmsg", "标签ID不可为空！");
-			return jsonRet;
+			return jsonRet.toString();
 		}
 		try {
-			JSONObject jsonRet = UserMgrHandle.deleteTag(tagId);
-			return jsonRet;
+			jsonRet = UserMgrHandle.deleteTag(tagId);
+			if(!jsonRet.has("errcode")) {
+				jsonRet.put("errcode", 0);
+				jsonRet.put("errmsg", "ok");
+				this.fansTagService.delete(tagId);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			JSONObject jsonRet = new JSONObject();
 			jsonRet.put("errcode", "-666");
 			jsonRet.put("errmsg", "系统出现异常，异常信息：" + e.getMessage());
-			return jsonRet;
 		}
+		return jsonRet.toString();
 	}
+	
 	/**
 	 * 获取标签下粉丝列表
 	 * @param tagId	标签ID

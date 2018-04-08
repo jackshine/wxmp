@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeekhan.wx.mapper.FansTagMapper">
+  <resultMap id="BaseResultMap" type="com.jeekhan.wx.model.FansTag">
+    <id column="tag_id" jdbcType="INTEGER" property="tagId" />
+    <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+    <result column="tag_desc" jdbcType="VARCHAR" property="tagDesc" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    tag_id, tag_name, tag_desc, update_time
+  </sql>
+  
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_fans_tag
+    where tag_id = #{tagId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from tb_fans_tag
+    where tag_id = #{tagId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.jeekhan.wx.model.FansTag">
+    insert into tb_fans_tag (tag_id, tag_name, tag_desc, 
+      update_time)
+    values (#{tagId,jdbcType=INTEGER}, #{tagName,jdbcType=VARCHAR}, #{tagDesc,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+ 
+  <update id="updateById" parameterType="com.jeekhan.wx.model.FansTag">
+    update tb_fans_tag
+    <set>
+      <if test="tagName != null">
+        tag_name = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagDesc != null">
+        tag_desc = #{tagDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where tag_id = #{tagId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_fans_tag
+    order by update_time desc 
+  </select>
+
+</mapper>
+
