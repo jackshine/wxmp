@@ -45,7 +45,7 @@ public class CustomizeMenuHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject createMenu(JSONObject menu) throws JSONException{
+	public JSONObject createMenu(JSONObject menu) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + token;
 		if(menu == null ) {
@@ -70,7 +70,7 @@ public class CustomizeMenuHandle {
 	 * } 
 	 * @throws JSONException 
 	 */
-	public static JSONObject getMenu() throws JSONException{
+	public JSONObject getMenu() throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" + token;
 		log.info("查询菜单（GET）：" + url );
@@ -108,9 +108,9 @@ public class CustomizeMenuHandle {
 	 * }
 	 * @throws JSONException 
 	 */
-	public static JSONObject addConditionalMenu(JSONObject menu) throws JSONException{
+	public JSONObject addConditionalMenu(JSONObject menu) throws JSONException{
 		String token = AccessToken.getAccessToken();
-		String url = " https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=" + token;
+		String url = "https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=" + token;
 		log.info("添加个性化菜单（POST）：" + url + ",参数：" + menu);
 		String ret = HttpUtils.doPostSSL(url, menu);
 		log.info("添加个性化菜单（POST）返回：" + ret );
@@ -127,7 +127,7 @@ public class CustomizeMenuHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject deleteConditonalMenu(String menuid) throws JSONException{
+	public JSONObject deleteConditonalMenu(String menuid) throws JSONException{
 		String menuStr = "{\"menuid\":\""+ menuid +"\"}";
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/menu/delconditional?access_token=" + token;
@@ -169,7 +169,7 @@ public class CustomizeMenuHandle {
 	 * }
 	 * @throws JSONException 
 	 */
-	public static JSONObject tryMatchReult(String userId) throws JSONException{
+	public JSONObject tryMatchReult(String userId) throws JSONException{
 		String menuStr = "{\"user_id\":\""+ userId +"\"}";
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/menu/trymatch?access_token=" + token;
@@ -190,7 +190,7 @@ public class CustomizeMenuHandle {
 	 * @return
 	 * @throws JSONException 
 	 */
-	public static JSONObject getCurrentSelfmenuInfo() throws JSONException{
+	public JSONObject getCurrentSelfmenuInfo() throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=" + token;
 		log.info("获取自定义菜单配置（GET）：" + url );

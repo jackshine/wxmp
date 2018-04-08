@@ -34,9 +34,10 @@ wx:
   APPSECRET: c2c15a91c950e8a6fc106192b044adfb
 #token
   TOKEN: 1314
-#自定义默认菜单
+#自定义菜单
   DEFAULT-MENU: '{"button":[{"name": "扫码", "sub_button": [{"type": "scancode_waitmsg", "name": "扫码带提示", "key": "rselfmenu_0_0"}, { "type": "scancode_push", "name": "扫码推事件",  "key": "rselfmenu_0_1"}]}, {"name": "发图", "sub_button": [{"type": "pic_sysphoto", "name": "系统拍照发图", "key": "rselfmenu_1_0"}, {"type": "pic_photo_or_album", "name": "拍照或者相册发图","key": "rselfmenu_1_1"}, {"type": "pic_weixin", "name": "微信相册发图", "key": "rselfmenu_1_2"}]}, {"name": "其他", "sub_button": [{"name": "发送位置", "type": "location_select", "key": "rselfmenu_2_0"},{"name": "点击", "type": "click", "key": "CLICK-KEY-1"}, { "name": "链接-搜索", "type": "view",  "url":"http://www.soso.com/"}]}]}'
 
+  
 ######业务参数############
 #用户注册URL、注销URL
 busi:
@@ -49,3 +50,5 @@ sys:
   qrcode-file-dir: '/Users/jeekhan/wxmp/qrcode/'
   material-file-dir: '/Users/jeekhan/wxmp/material/'
   kf-headimg-dir: '/Users/jeekhan/wxmp/headimg/'
+  wxmenu-file-dir: '/Users/jeekhan/wxmp/wxmenu/'
+  

@@ -69,12 +69,7 @@ public class WechatAction {
 			e.printStackTrace();
 		}
 		if(signature.equals(ret)){
-			//创建菜单
-			try {
-				CustomizeMenuHandle.createMenu(null);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+			
 			return echostr;
 		}
 		return "fail";
