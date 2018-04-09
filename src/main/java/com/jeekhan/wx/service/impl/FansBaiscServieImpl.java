@@ -79,5 +79,69 @@ public class FansBaiscServieImpl implements FansBasicService {
 		return fansBasicMapper.selectAll(params, pageCond);
 	}
 
+	/**
+	 * 从粉丝用户身上收回指定标签
+	 * @param tagId
+	 * @return
+	 */
+	public int removeTagFromFanses(Integer tagId) {
+		return this.fansBasicMapper.removeTag(tagId);
+	}
+	
+	/**
+	 * 为粉丝用户打上指定标签
+	 * @param openIds
+	 * @param tagId
+	 * @return
+	 */
+	public void addTag2Fanses(List<String> openIds,Integer tagId) {
+		for(String openId:openIds) {
+			this.fansBasicMapper.addTag(openId, tagId);
+		}
+	}
 
+	/**
+	 * 为粉丝用户更新备注
+	 * @param openId
+	 * @param remark
+	 * @return 更新记录数
+	 */
+	public int updateRemark(String openId,String remark) {
+		FansBasic basic = new FansBasic();
+		basic.setUpdateTime(new Date());
+		basic.setOpenId(openId);
+		basic.setRemark(remark);
+		return this.fansBasicMapper.updateById(basic);
+	}
+	
+	/**
+	 * 将粉丝用户移入黑名单
+	 * @param openIds
+	 * @return 更新记录数
+	 */
+	public void blackFans(List<String> openIds) {
+		FansBasic basic = new FansBasic();
+		for(String openId:openIds) {
+			basic.setUpdateTime(new Date());
+			basic.setOpenId(openId);
+			basic.setIsBlack("1");
+			this.fansBasicMapper.updateById(basic);
+		}
+	}
+	
+	/**
+	 * 将粉丝用户移出黑名单
+	 * @param openIds
+	 * @return 更新记录数
+	 */
+	public void unBlackFans(List<String> openIds) {
+		FansBasic basic = new FansBasic();
+		for(String openId:openIds) {
+			basic.setUpdateTime(new Date());
+			basic.setOpenId(openId);
+			basic.setIsBlack("0");
+			this.fansBasicMapper.updateById(basic);
+		}
+	}
+	
 }

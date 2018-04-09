@@ -299,6 +299,5 @@ public class KFACcountAction {
 			jsonRet.put("errmsg", "系统异常，异常信息：" + e.getMessage());
 		}
 		return jsonRet.toString(); 
-	}
-	
+	}	
 }

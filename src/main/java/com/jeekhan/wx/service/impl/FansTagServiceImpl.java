@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jeekhan.wx.mapper.FansBasicMapper;
 import com.jeekhan.wx.mapper.FansTagMapper;
 import com.jeekhan.wx.model.FansTag;
 import com.jeekhan.wx.service.FansTagService;
@@ -15,6 +16,8 @@ public class FansTagServiceImpl implements FansTagService {
 	
 	@Autowired
 	private FansTagMapper fansTagMapper;
+	@Autowired
+	private FansBasicMapper fansBasicMapper;
 	
 	/**
 	 * 添加粉丝标签
@@ -46,10 +49,12 @@ public class FansTagServiceImpl implements FansTagService {
 	
 	/**
 	 * 物理删除粉丝标签
+	 * 从用户身上收回标签
 	 * @param tagId
 	 * @return 删除记录数量
 	 */
 	public Integer delete(Integer tagId) {
+		this.fansBasicMapper.removeTag(tagId);
 		return this.fansTagMapper.deleteById(tagId);
 	}
 	

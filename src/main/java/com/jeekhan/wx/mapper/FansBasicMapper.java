@@ -34,4 +34,18 @@ public interface FansBasicMapper {
      */
     int countAll(@Param("params")Map<String,Object> params);
 
+    /**
+	 * 从粉丝用户身上收回指定标签
+	 * @param tagId
+	 * @return
+	 */
+    int removeTag(Integer tagId);
+    
+    /**
+	 * 为粉丝用户打上指定标签
+	 * @param openId
+	 * @param tagId
+	 * @return
+	 */
+    int addTag(@Param("openId")String openId,@Param("tagId")Integer tagId);
 }

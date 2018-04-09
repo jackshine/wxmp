@@ -89,7 +89,6 @@
                   </select>
 	            </div>
 	          </div>	        
-	
 	        </div>
 	        <div class="row" style="margin-top:2px"> 
 	          <div class="col-xs-6 form-group" style="padding-left:0;">

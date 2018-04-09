@@ -22,6 +22,8 @@ public interface FansTagService {
 	
 	/**
 	 * 物理删除粉丝标签
+	 * 物理删除粉丝标签
+	 * 从用户身上收回标签
 	 * @param tagId
 	 * @return 删除记录数
 	 */

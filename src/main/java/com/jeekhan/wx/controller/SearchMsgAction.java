@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.jeekhan.wx.dto.Operator;
 import com.jeekhan.wx.model.WXMsgLog;
 import com.jeekhan.wx.service.WXMsgLogService;
 import com.jeekhan.wx.utils.PageCond;
@@ -51,83 +50,82 @@ public class SearchMsgAction {
 	 */
 	@RequestMapping("/search")
 	@ResponseBody
-	public String search(String jsonParams,String pageCond,Operator operator) throws JSONException {
+	public String search(String jsonParams,PageCond pageCond) throws JSONException {
 		JSONObject jsonRet = new JSONObject();
 		try {
 			Map<String,Object> condParams = new HashMap<String,Object>();
-			PageCond pCond = new PageCond();
-			pCond.setBegin(0);
-			pCond.setPageSize(20);
-			JSONObject params = new JSONObject(jsonParams);
-			JSONObject page = new JSONObject(pageCond);
-			//条件整合
-			if(params.has("msgType")) {
-				if(params.getString("msgType") != null && (params.getString("msgType").trim().length()>0)){
-					condParams.put("msgType", params.getString("msgType"));
+			if(jsonParams == null) {
+				JSONObject params = new JSONObject(jsonParams);
+				//条件整合
+				if(params.has("msgType")) {
+					if(params.getString("msgType") != null && (params.getString("msgType").trim().length()>0)){
+						condParams.put("msgType", params.getString("msgType"));
+					}
+				}
+				if(params.has("eventType")) {
+					if(params.getString("eventType") != null && (params.getString("eventType").trim().length()>0)){
+						condParams.put("eventType", params.getString("eventType"));
+					}
+				}
+				if(params.has("inout")) {
+					if(params.getString("inout") != null && (params.getString("inout").trim().length()>0)){
+						condParams.put("inout", params.getString("inout"));
+					}
+				}
+				if(params.has("status")) {
+					if(params.getString("status") != null && (params.getString("status").trim().length()>0)){
+						condParams.put("status", params.getString("status"));
+					}
+				}
+				if(params.has("isMass")) {
+					if(params.getString("isMass") != null && (params.getString("isMass").trim().length()>0)){
+						condParams.put("isMass", params.getString("isMass"));
+					}
+				}
+				if(params.has("isTpl")) {
+					if(params.getString("isTpl") != null && (params.getString("isTpl").trim().length()>0)){
+						condParams.put("isTpl", params.getString("isTpl"));
+					}
+				}
+				if(params.has("fromUser")) {
+					if(params.getString("fromUser") != null && (params.getString("fromUser").trim().length()>0)){
+						condParams.put("fromUser", params.getString("fromUser"));
+					}
+				}
+				if(params.has("beginTime")) {
+					if(params.getString("beginTime") != null && (params.getString("beginTime").trim().length()>0)){
+						condParams.put("beginTime", params.getString("beginTime"));
+					}
+				}
+				if(params.has("endTime")) {
+					if(params.getString("endTime") != null && (params.getString("endTime").trim().length()>0)){
+						condParams.put("endTime", params.getString("endTime"));
+					}
 				}
 			}
-			if(params.has("eventType")) {
-				if(params.getString("eventType") != null && (params.getString("eventType").trim().length()>0)){
-					condParams.put("eventType", params.getString("eventType"));
-				}
+			if(pageCond == null) {
+				pageCond = new PageCond(0,20);
 			}
-			if(params.has("inout")) {
-				if(params.getString("inout") != null && (params.getString("inout").trim().length()>0)){
-					condParams.put("inout", params.getString("inout"));
-				}
+			if(pageCond.getBegin()<0) {
+				pageCond.setBegin(0);
 			}
-			if(params.has("status")) {
-				if(params.getString("status") != null && (params.getString("status").trim().length()>0)){
-					condParams.put("status", params.getString("status"));
-				}
+			if(pageCond.getPageSize() < 2 || pageCond.getPageSize() > 100) {
+				pageCond.setPageSize(20);
 			}
-			if(params.has("isMass")) {
-				if(params.getString("isMass") != null && (params.getString("isMass").trim().length()>0)){
-					condParams.put("isMass", params.getString("isMass"));
-				}
-			}
-			if(params.has("isTpl")) {
-				if(params.getString("isTpl") != null && (params.getString("isTpl").trim().length()>0)){
-					condParams.put("isTpl", params.getString("isTpl"));
-				}
-			}
-			if(params.has("fromUser")) {
-				if(params.getString("fromUser") != null && (params.getString("fromUser").trim().length()>0)){
-					condParams.put("fromUser", params.getString("fromUser"));
-				}
-			}
-			if(params.has("beginTime")) {
-				if(params.getString("beginTime") != null && (params.getString("beginTime").trim().length()>0)){
-					condParams.put("beginTime", params.getString("beginTime"));
-				}
-			}
-			if(params.has("endTime")) {
-				if(params.getString("endTime") != null && (params.getString("endTime").trim().length()>0)){
-					condParams.put("endTime", params.getString("endTime"));
-				}
-			}
-			if(page.has("begin")) {
-				pCond.setBegin(page.getInt("begin")<0 ? 0 : page.getInt("begin"));
-			}
-			if(page.has("pageSize")) {
-				int size = page.getInt("pageSize");
-				if(size < 2 || size > 100) {
-					size = 20;
-				}
-				pCond.setPageSize(size);
-			}
+			
 			int cnt = wXMsgLogService.countMsgs(condParams);
-			pCond.setCount(cnt);
-			page.put("pageSize", pCond.getPageSize());
-			page.put("begin", pCond.getBegin());
-			page.put("count", pCond.getCount());
+			pageCond.setCount(cnt);
 			if(cnt > 0) {
-			List<WXMsgLog> datas = wXMsgLogService.getMsgs(condParams, pCond);
+			List<WXMsgLog> datas = wXMsgLogService.getMsgs(condParams, pageCond);
 				jsonRet.put("datas", new JSONArray(datas));
 			}
+			JSONObject jaonPage = new JSONObject();
+			jaonPage.put("pageSize", pageCond.getPageSize());
+			jaonPage.put("begin", pageCond.getBegin());
+			jaonPage.put("count", pageCond.getCount());
 			jsonRet.put("errcode", 0);
 			jsonRet.put("errmsg", "ok");
-			jsonRet.put("pageCond", page);
+			jsonRet.put("pageCond", jaonPage);
 		}catch(Exception e) {
 			e.printStackTrace();
 			jsonRet.put("errcode", -999);

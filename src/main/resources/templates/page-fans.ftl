@@ -18,28 +18,39 @@
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
-<div class="container" id="container">
+<div class="container" >
   <#include "/page-top-menu.ftl" encoding="utf8"> 
   <div class="row" style="padding:5px 0 0 0;">
 	<!-- 左面功能菜单 -->
-    <div class="col-xs-3" style="padding-left:0">
+    <div class="col-xs-1" style="padding-left:0">
       <div class="panel panel-info">
    	    <div class="panel-heading" style="margin:0">
    	      粉丝用户管理
         </div>
         <div class="panel-body">
 		    <ul class="nav nav-pills nav-stacked">
-			  <li id="link_tag" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');$('[id$=Mgr]').hide();$('#tagMgr').show(); "><a href="#">标签管理</a></li>
-			  <li id="link_fans" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');$('[id$=Mgr]').hide();$('#fansMgr').show(); "><a href="#">粉丝-标签管理</a></li>
-			  <li id="link_black" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');$('[id$=Mgr]').hide();$('#blackMgr').show(); "><a href="#">粉丝-黑名单管理</a></li>
+		      <li id="link_memo" class="active" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');$('[id$=MgrMain]').hide();$('#memoMgrMain').show(); "><a href="#">功能说明</a></li>
+			  <li id="link_tag" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');$('[id$=MgrMain]').hide();$('#tagMgrMain').show(); "><a href="#">标签管理</a></li>
+			  <li id="link_fans" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');$('[id$=MgrMain]').hide();$('#fansMgrMain').show(); "><a href="#">粉丝管理</a></li>
 		    </ul>
 	   	</div>
   	  </div>
     </div><!-- end of 左面功能菜单 -->
     <!-- 右面详细信息 -->
-    <div class="col-xs-9" style="padding-right:0">
+    <div class="col-xs-11" style="padding-right:0">
+      <!-- 功能说明-->
+      <div class="row" id="memoMgrMain" style="padding:0 5px"> 
+        <div class="panel panel-info">
+          <div class="panel-heading" style="margin:0">
+            标签／粉丝管理说明
+          </div>
+          <div class="panel-body">
+
+          </div>
+        </div>
+      </div>
       <!-- 标签管理-->
-      <div class="row" id="tagMgr" style="display:none;padding:0 5px"> 
+      <div class="row" id="tagMgrMain" style="display:none;padding:0 5px"> 
         <div class="panel panel-info">
           <div class="panel-heading" style="margin:0">
             <button type="button" class="btn btn-info" style="margin-left:20px" @click="queryAllTags">&nbsp;&nbsp;查询所有&nbsp;&nbsp;</button>
@@ -64,77 +75,153 @@
         </div>
       </div>
       <!-- 粉丝管理-->
-      <div class="row" id="fansMgr" style="display:none;padding:0 5px">
+      <div class="row" id="fansMgrMain" style="display:none;padding:0 5px">
         <div class="panel panel-info">
           <div class="panel-heading" style="margin:0" >
-            <button type="button" class="btn btn-primary" id="save" style="margin-left:20px">&nbsp;&nbsp;添加标签&nbsp;&nbsp;</button>
-            <button type="button" class="btn btn-warning" id="save" style="margin-left:20px">&nbsp;&nbsp;移除标签&nbsp;&nbsp;</button>
-            <button type="button" class="btn btn-primary" id="save" style="margin-left:20px">&nbsp;&nbsp;修改备注&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-primary" style="margin-left:20px">&nbsp;&nbsp;添加标签&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-warning" style="margin-left:20px">&nbsp;&nbsp;移除标签&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-primary" style="margin-left:20px">&nbsp;&nbsp;修改备注&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-primary" style="margin-left:20px">&nbsp;&nbsp;加入黑名单&nbsp;&nbsp;</button>
+            <button type="button" class="btn btn-primary" style="margin-left:20px">&nbsp;&nbsp;移出黑名单&nbsp;&nbsp;</button>
           </div>
           <div class="panel-body">
-            <div class="col-xs-7">
               <div class="panel panel-info">
                 <div class="panel-heading" style="margin:0" >
-	                <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
-	                  <input type="text" class="form-control" id="name" name="name" value="" maxLength=38 required placeholder="请输入粉丝OPENID">
-	                </div>
-                    <button type="button" class="btn btn-info" id="save" style="margin-left:20px">&nbsp;&nbsp;取用户详情&nbsp;&nbsp;</button>
+	              <form class="form-inline" role="form" id="searchForm">
+		    	  	    <div class="row" style="margin-top:0px">
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+			            <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">性别</label>
+			            <div class="col-xs-8" style="padding-left:5px;padding-right:5px"> 
+			              <select class="form-control" v-model="params.sex" name="inout" >
+			                <option value="">请选择...</option>
+		                    <option value="0">保密</option>
+		                    <option value="1">男</option>
+		                    <option value="2">女</option>
+		                  </select>
+			            </div>
+			          </div>
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+			            <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">省份</label>
+			            <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+			              <select class="form-control" v-model="params.province" >
+			                <option value="">请选择...</option>
+		                    <option v-for="(value,key) in metadata.province" v-bind:value="key">{{value}}</option>                    
+		                  </select>
+			            </div>
+			          </div>	
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+			            <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">城市</label>
+			            <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+			              <select class="form-control" v-model="params.city" >
+			                <option value="">请选择...</option>
+		                    <option v-for="(value,key) in metadata.city" v-bind:value="key">{{value}}</option>                    
+		                  </select>
+			            </div>
+			          </div>	
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+			            <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">标签</label>
+			            <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+			              <select class="form-control" v-model="params.tagid" >
+			                <option value="">请选择...</option>
+		                    <option v-for="item in metadata.tagid" v-bind:value="item.tagId">{{item.tagName}}</option>                    
+		                  </select>
+			            </div>
+			          </div>        
+			        </div>
+			        <div class="row" style="margin-top:2px">
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+			            <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">关注渠道</label>
+			            <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+			              <select class="form-control" v-model="params.channel">
+			                <option value="">请选择...</option>
+		                    <option v-for="(value,key) in metadata.channel" v-bind:value="key">{{value}}</option>
+		                  </select>
+			            </div>
+			          </div>
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+			            <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">黑名单</label>
+			            <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+			              <select class="form-control" v-model="params.isBlack">
+			                <option value="">请选择...</option>
+		                    <option value="0">否</option>
+		                    <option value="1">是</option>
+		                  </select>
+			            </div>
+			          </div>	
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+	                    <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">OPENID</label>
+	                    <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+	                      <input type="text" class="form-control" v-model="params.openId" placeholder="请输入OPENID">
+	                    </div>
+	                  </div>				
+			        </div>
+			        <div class="row" style="margin-top:2px"> 
+			          <div class="col-xs-6 form-group" style="padding-left:0;">
+			            <label class="col-xs-2 control-label" style="padding-left:5px;padding-right:5px">关注时间</label>
+			            <div class="col-xs-10" style="padding-left:5px;padding-right:5px">
+			              <input type="date" class="form-control" v-model="params.beginTime" name="beginTime" placeholder="请输入开始时间">~
+			              <input type="date" class="form-control" v-model="params.endTime" name="endTime" placeholder="请输入结束时间">
+			            </div>
+			          </div>
+ 
+			          <div class="col-xs-3 form-group" style="padding-left:0">
+		                <button type="button" class="btn btn-info"  style="margin-left:20px" v-on:click="query">&nbsp;&nbsp;查 询&nbsp;&nbsp;</button>
+		                <button type="button" class="btn btn-warning"  style="margin-left:20px" v-on:click="reset">&nbsp;&nbsp;重 置&nbsp;&nbsp; </button>
+			          </div>
+			        </div>
+			      </form>
                 </div>
                 <div class="panel-body">
-                用户详细信息
+                  <table class="table table-bordered table-striped table-hover ">
+                   <thead>
+   	                <tr>
+   	                  <th width="3%">&nbsp;&nbsp;<input type="checkbox" style="display:block;width:20px;height:20px"></th>
+   	                  <th width="15%">OPENID</th><th width="5%">性别</th><th width="15%">省份</th><th width="15%">城市</th>
+   	                  <th width="15%">标签列表</th><th width="15%">关注渠道</th><th width="6%">黑名单</th><th width="15%">关注时间</th>
+   	                </tr>
+                   </thead>
+                   <tbody> 
+                     <tr v-for="item in datas">
+                       <td><input type="checkbox" style="display:block;width:20px;height:20px"></td>
+                       <td>{{getSex(item.sex)}}</td>
+                       <td>{{item.province}}</td>
+                       <td>{{item.city}}</td>
+                       <td>{{item.tagidList}}</td>
+                       <td>{{item.subscribeScene}}</td>
+                       <td>{{item.isBlack}}</td>
+                       <td>{{item.subscribeTime}}</td>
+                     </tr>
+                     <tr>
+		                <td colspan="9">
+						  <ul class="pager" style="margin:0"> 
+		                    <li v-if="pageCond.begin>0" class="active"><a href="###" v-on:click="goUpPage">上一页</a></li>
+		                    <li v-if="pageCond.begin<=0" class="disabled"><a href="###" >上一页</a></li>
+		                    <li> 共有<span >{{pageCnt}}</span>页 
+		 	                  <input type="number" v-model="pageNo" maxLength=15 min=1 style='width:55px'>
+		 	                  <button class="button btn-primary" v-on:click="goPage">GO</button>
+		                    </li>
+		                    <li v-if="pageCond.begin+pageCond.pageSize<pageCond.count" class="active"><a href="#" v-on:click="goDownPage">下一页</a></li>
+		                    <li v-if="pageCond.begin+pageCond.pageSize>=pageCond.count" class="disabled"><a href="#">下一页</a></li>
+		                  </ul>
+		           	    </td>
+		              </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
-            <div class="col-xs-5">
-              <div class="panel panel-info">
-                <div class="panel-heading" style="margin:0" >
-                  用户标签信息
-                </div>
-                <div class="panel-body">
-                  
-                </div>
-              </div> 
-              <div class="panel panel-info">
-                <div class="panel-heading" style="margin:0" >
-                  用户备注信息
-                </div>
-                <div class="panel-body">
-                  
-                </div>
-              </div>           
-            </div>            
-          </div>
+          </div>           
         </div>
-      </div>
-      <!-- 黑名单管理-->
-      <div class="row" id="blackMgr" style="display:none;padding:0 5px">
-        <div class="panel panel-info">
-          <div class="panel-heading" style="margin:0">
-            <button type="button" class="btn btn-primary" id="save" style="margin-left:20px">&nbsp;&nbsp;移入黑名单&nbsp;&nbsp;</button>
-            <button type="button" class="btn btn-warning" id="save" style="margin-left:20px">&nbsp;&nbsp;移出黑名单&nbsp;&nbsp;</button>
-          </div>
-          <div class="panel-body">
-            <div class="panel panel-info">
-              <div class="panel-heading" style="margin:0" >
-	            <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
-	              <input type="text" class="form-control" id="name" name="name" value="" maxLength=38 required placeholder="请输入粉丝OPENID">
-	            </div>
-                <button type="button" class="btn btn-info" id="save" style="margin-left:20px">&nbsp;&nbsp;取用户详情&nbsp;&nbsp;</button>
-              </div>
-              <div class="panel-body">
-                用户详细信息
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>       
+      </div>      
     </div><!-- end of 右面详细信息 -->
-  </div>  
+  </div>
   
 </div>
 <script>
-var container = new Vue({
-	el:'#container',
+//=============================================================================================================================================
+//-----------------标签管理主界面--------------------
+//=============================================================================================================================================
+var tagMgrMainVue = new Vue({
+	el:'#tagMgrMain',
 	data:{
 		selected:{
 			tagId:'',
@@ -174,12 +261,12 @@ var container = new Vue({
 			 }
 			 if(confirm("如果删除则将收回用户身上的标签信息，您确定是要删除标签【" + this.selected.tagId + "】吗？")){
 				 $.ajax({
-						url: '${contextPath}/fans/deleteTag',
+						url: '${contextPath}/fans/tag/delete',
 						data: {'tagId':this.selected.tagId},
 						success: function(jsonRet,status,xhr){
 							if(jsonRet){
 								if(0 == jsonRet.errcode){
-									alert("标签【" + container.selected.tagId + "】已成功删除！");
+									alert("标签【" + tagMgrMainVue.selected.tagId + "】已成功删除！");
 									getAllTags();
 								}else{//出现逻辑错误
 									alert(jsonRet.errmsg);
@@ -196,25 +283,27 @@ var container = new Vue({
 });
 function getAllTags(){
 	 $.ajax({
-			url: '${contextPath}/fans/getAllTags',
-			data: {},
-			success: function(jsonRet,status,xhr){
-				if(jsonRet){
-					if(0 == jsonRet.errcode){
-						container.tagList = jsonRet.data;
-					}else{//出现逻辑错误
-						alert(jsonRet.errmsg);
-					}
-				}else{
-					alert('系统数据访问失败！')
+		url: '${contextPath}/fans/tag/getAll',
+		data: {},
+		success: function(jsonRet,status,xhr){
+			if(jsonRet){
+				if(0 == jsonRet.errcode){
+					tagMgrMainVue.tagList = jsonRet.data;
+					fansMgrMainVue.metadata.tagid = tagMgrMainVue.tagList;
+				}else{//出现逻辑错误
+					alert(jsonRet.errmsg);
 				}
-			},
-			dataType: 'json'
-		});
+			}else{
+				alert('系统数据访问失败！')
+			}
+		},
+		dataType: 'json'
+	});
 }
+getAllTags();
 </script>
 
-<!-- 创建标签模态对话框（Modal） -->
+<!-- 标签管理模态对话框（Modal） -->
 <div class="modal fade " id="tagMgrModal" tabindex="-1" role="dialog" aria-labelledby="tagMgrModalLabel" aria-hidden="true" data-backdrop="static">
    <div class="modal-dialog">
       <div class="modal-content">
@@ -266,7 +355,7 @@ var tagMgrVue = new Vue({
 					return false;
 				}
 				$.ajax({
-					url: '${contextPath}/fans/' + (this.tagId ? 'updateTag':'createTag'),
+					url: '${contextPath}/fans/tag/' + (this.tagId ? 'update':'create'),
 					data: {'tagName':this.tagName,'tagDesc':this.tagDesc,'tagId':this.tagId},
 					success: function(jsonRet,status,xhr){
 						if(jsonRet){
@@ -286,8 +375,102 @@ var tagMgrVue = new Vue({
 		  }
 	  }
 });
+</script>
+
+<script>
+//=============================================================================================================================================
+//-----------------粉丝管理主界面--------------------
+//=============================================================================================================================================
+var fansMgrMainVue = new Vue({
+	el:'#fansMgrMain',
+	data:{
+		metadata:{//元数据
+			province:[],
+			city:[],
+			channel:{'ADD_SCENE_SEARCH':'公众号搜索','ADD_SCENE_ACCOUNT_MIGRATION':'公众号迁移','ADD_SCENE_PROFILE_CARD':'名片分享','ADD_SCENE_QR_CODE':'扫描二维码','ADD_SCENEPROFILE_LINK':'图文页内名称点击','ADD_SCENE_PROFILE_ITEM':'图文页右上角菜单','ADD_SCENE_PAID':'支付后关注','ADD_SCENE_OTHERS':'其他'},
+			tagid:[]	//取标签管理数据
+		},
+		datas:[],//查询数据列表
+		pageNo:0,
+		pageCond:{begin:0,pageSize:20,count:0},//初始分页信息（点击查询时更新）
+		searchPageCond:{begin:0,pageSize:20}, //
+		params:{//查询参数
+			sex:'',province:'',city:'',channel:'',tagid:'',isBlack:'',openId:''
+		}
+	},
+	methods:{
+		getSex: function(code){
+			if(code == '0') return '保密';
+			if(code == '1') return '男';
+			if(code == '2') return '女';
+			return code
+		},
+		goUpPage:function(event){
+			this.searchPageCond.begin = this.pageCond.begin - this.pageCond.pageSize;
+			this.searchPageCond.pageSize = this.pageCond.pageSize;
+			searchFans();
+		},
+		goDownPage:function(){
+			this.searchPageCond.begin = this.pageCond.begin + this.pageCond.pageSize;
+			this.searchPageCond.pageSize = this.pageCond.pageSize;
+			searchFans();
+		},
+		goPage:function(){
+			if(!this.pageNo){
+				 return false;
+			 }
+			 if(this.pageNo<1){
+				 alert('小于最小页数（1）！');
+				 this.pageNo = 1;
+			 }
+			 if(this.pageNo > this.pageCnt){
+				 alert('超过最大页数（' + this.pageCnt + '）！');
+				 this.pageNo = this.pageCnt;
+				 return false;
+			 }
+			 this.searchPageCond.begin = this.pageCond.pageSize*(this.pageNo-1);
+			 this.searchPageCond.pageSize = this.pageCond.pageSize;
+			 searchFans();
+		},
+		query : function(){
+			this.searchPageCond.begin = 0;
+			this.searchPageCond.pageSize = this.pageCond.pageSize;
+			searchFans();
+		},
+		reset: function(){
+			this.params = {sex:'',province:'',city:'',channel:'',tagid:'',isBlack:'',openId:''};
+		}
+	},
+	computed:{
+		pageCnt:function(){
+			return Math.ceil(this.pageCond.count/this.pageCond.pageSize);
+		}
+	}
+});
+function searchFans(){
+	$.ajax({
+		url: '${contextPath}/fans/fans/search',
+		data: {'pageCond':JSON.stringify(tagMgrMainVue.searchPageCond),'jsonParams':JSON.stringify(tagMgrMainVue.params)},
+		success: function(jsonRet,status,xhr){
+			if(jsonRet){
+				if(0 == jsonRet.errcode){
+					tagMgrMainVue.datas = jsonRet.datas;
+					tagMgrMainVue.pageCond = jsonRet.pageCond;
+					tagMgrMainVue.pageNo = Math.ceil((container.pageCond.begin+1)/container.pageCond.pageSize)
+				}else{//出现逻辑错误
+					alert(jsonRet.errmsg);
+				}
+			}else{
+				alert('系统数据访问失败！')
+			}
+		},
+		dataType: 'json'
+	});
+}
+
 
 </script>
+
 <#if errmsg??>
 <!-- 错误提示模态框（Modal） -->
 <div class="modal fade " id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorTitle" aria-hidden="false" data-backdrop="static">

@@ -17,14 +17,7 @@ public class TestMain {
 	
 	public static void testUser() throws JSONException {
 		FansAction user = new FansAction();
-//		JSONObject ret1 = user.createUserTag("昆明");
-//		System.out.println(ret1);
-//		JSONObject ret2 = user.getAllTags();
-//		System.out.println(ret2);
-		JSONObject ret3 = user.getUsers(null);
-		System.out.println(ret3);
-		JSONObject ret4 = user.addTagToUsers("ofvDZv893-8LL8qax8dyXGp2u23g", 100);
-		System.out.println(ret4);
+
 	}
 	
 	public static void testAccount() throws JSONException, IOException {

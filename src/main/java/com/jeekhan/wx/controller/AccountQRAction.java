@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jeekhan.wx.api.AccountQRHandle;
-import com.jeekhan.wx.dto.Operator;
 import com.jeekhan.wx.model.WXQRCode;
 import com.jeekhan.wx.service.WXQRCodeService;
 import com.jeekhan.wx.utils.PageCond;
@@ -319,68 +318,66 @@ public class AccountQRAction {
 	 */
 	@RequestMapping("/search")
 	@ResponseBody
-	public String search(String jsonParams,String pageCond,Operator operator) throws JSONException {
+	public String search(String jsonParams,PageCond pageCond) throws JSONException {
 		JSONObject jsonRet = new JSONObject();
 		try {
 			Map<String,Object> condParams = new HashMap<String,Object>();
-			PageCond pCond = new PageCond();
-			pCond.setBegin(0);
-			pCond.setPageSize(20);
-			JSONObject params = new JSONObject(jsonParams);
-			JSONObject page = new JSONObject(pageCond);
-			//条件整合
-			if(params.has("isPerm")) {
-				if(params.getString("isPerm") != null && (params.getString("isPerm").trim().length()>0)){
-					condParams.put("isPerm", params.getString("isPerm"));
+			if(jsonParams == null) {
+				JSONObject params = new JSONObject(jsonParams);
+				//条件整合
+				if(params.has("isPerm")) {
+					if(params.getString("isPerm") != null && (params.getString("isPerm").trim().length()>0)){
+						condParams.put("isPerm", params.getString("isPerm"));
+					}
+				}
+				if(params.has("sceneId")) {
+					if(params.get("sceneId") != null && (params.get("sceneId").toString().trim().length()>0)){
+						condParams.put("sceneId", params.get("sceneId"));
+					}
+				}
+				if(params.has("ticket")) {
+					if(params.getString("ticket") != null && (params.getString("ticket").trim().length()>0)){
+						condParams.put("ticket", params.getString("ticket"));
+					}
+				}
+				if(params.has("isAvail")) {
+					if(params.getString("isAvail") != null && (params.getString("isAvail").trim().length()>0)){
+						condParams.put("isAvail", params.getString("isAvail"));
+					}
+				}
+				if(params.has("beginTime")) {
+					if(params.getString("beginTime") != null && (params.getString("beginTime").trim().length()>0)){
+						condParams.put("beginTime", params.getString("beginTime"));
+					}
+				}
+				if(params.has("endTime")) {
+					if(params.getString("endTime") != null && (params.getString("endTime").trim().length()>0)){
+						condParams.put("endTime", params.getString("endTime"));
+					}
 				}
 			}
-			if(params.has("sceneId")) {
-				if(params.get("sceneId") != null && (params.get("sceneId").toString().trim().length()>0)){
-					condParams.put("sceneId", params.get("sceneId"));
-				}
+			if(pageCond == null) {
+				pageCond = new PageCond(0,20);
 			}
-			if(params.has("ticket")) {
-				if(params.getString("ticket") != null && (params.getString("ticket").trim().length()>0)){
-					condParams.put("ticket", params.getString("ticket"));
-				}
+			if(pageCond.getBegin()<0) {
+				pageCond.setBegin(0);
 			}
-			if(params.has("isAvail")) {
-				if(params.getString("isAvail") != null && (params.getString("isAvail").trim().length()>0)){
-					condParams.put("isAvail", params.getString("isAvail"));
-				}
-			}
-			if(params.has("beginTime")) {
-				if(params.getString("beginTime") != null && (params.getString("beginTime").trim().length()>0)){
-					condParams.put("beginTime", params.getString("beginTime"));
-				}
-			}
-			if(params.has("endTime")) {
-				if(params.getString("endTime") != null && (params.getString("endTime").trim().length()>0)){
-					condParams.put("endTime", params.getString("endTime"));
-				}
-			}
-			if(page.has("begin")) {
-				pCond.setBegin(page.getInt("begin")<0 ? 0 : page.getInt("begin"));
-			}
-			if(page.has("pageSize")) {
-				int size = page.getInt("pageSize");
-				if(size < 2 || size > 100) {
-					size = 20;
-				}
-				pCond.setPageSize(size);
+			if(pageCond.getPageSize() < 2 || pageCond.getPageSize() > 100) {
+				pageCond.setPageSize(20);
 			}
 			int cnt = this.wXQRCodeService.countAll(condParams);
-			pCond.setCount(cnt);
-			page.put("pageSize", pCond.getPageSize());
-			page.put("begin", pCond.getBegin());
-			page.put("count", pCond.getCount());
+			pageCond.setCount(cnt);
+			JSONObject jsonPage = new JSONObject();
+			jsonPage.put("pageSize", pageCond.getPageSize());
+			jsonPage.put("begin", pageCond.getBegin());
+			jsonPage.put("count", pageCond.getCount());
 			if(cnt > 0) {
-			List<WXQRCode> datas = this.wXQRCodeService.getAll(condParams, pCond);
+			List<WXQRCode> datas = this.wXQRCodeService.getAll(condParams, pageCond);
 				jsonRet.put("datas", new JSONArray(datas));
 			}
 			jsonRet.put("errcode", 0);
 			jsonRet.put("errmsg", "ok");
-			jsonRet.put("pageCond", page);
+			jsonRet.put("pageCond", jsonPage);
 		}catch(Exception e) {
 			e.printStackTrace();
 			jsonRet.put("errcode", -999);

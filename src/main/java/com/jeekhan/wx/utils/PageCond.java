@@ -9,14 +9,6 @@ public class PageCond {
 	private int begin;		//开始记录号
 	private int pageSize;	//每页大小
 	private int count;		//总记录数
-	public PageCond(int begin ,int pageSize,int count){
-		if(begin < 0) {
-			begin = 0;
-		}
-		this.begin = begin;
-		this.pageSize = pageSize;
-		this.count = count;
-	}
 	public PageCond(int begin ,int pageSize){
 		if(begin < 0) {
 			begin = 0;

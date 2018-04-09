@@ -49,5 +49,44 @@ public interface FansBasicService {
 	 * @return
 	 */
 	public List<FansBasic> getAll(Map<String,Object> params,PageCond pageCond);
+	
+	/**
+	 * 从粉丝用户身上收回指定标签
+	 * @param tagId
+	 * @return
+	 */
+	public int removeTagFromFanses(Integer tagId) ;
+	
+	/**
+	 * 为粉丝用户打上指定标签
+	 * @param openIds
+	 * @param tagId
+	 * @return
+	 */
+	public void addTag2Fanses(List<String> openIds,Integer tagId) ;
+	
+	/**
+	 * 为粉丝用户更新备注
+	 * @param openId
+	 * @param remark
+	 * @return 更新记录数
+	 */
+	public int updateRemark(String openId,String remark);
+	
+	/**
+	 * 将粉丝用户移入黑名单
+	 * @param openIds
+	 * @return 更新记录数
+	 */
+	public void blackFans(List<String> openIds);
+	
+	/**
+	 * 将粉丝用户移出黑名单
+	 * @param openIds
+	 * @return 更新记录数
+	 */
+	public void unBlackFans(List<String> openIds);
+	
+	
 
 }

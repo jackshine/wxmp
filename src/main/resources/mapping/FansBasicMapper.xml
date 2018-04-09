@@ -227,28 +227,28 @@
        and province = #{params.province}
      </if> 
      <if test="params.city != null">
-       and city = (#{params.city})
+       and city = #{params.city}
      </if>    
      <if test="params.subscribeTimeBegin != null">
-       and subscribeTime &gt; (#{params.subscribeTimeBegin})
+       and subscribeTime &gt; #{params.subscribeTimeBegin}
      </if>
      <if test="params.subscribeTimeEnd != null">
-       and subscribeTime &lt; (#{params.subscribeTimeEnd})
+       and subscribeTime &lt; #{params.subscribeTimeEnd}
      </if>     
      <if test="params.tagid != null">
-       and (#{params.tagid}) in tagid_list
+       and tagid_list like concat('%,',#{params.tagid},',%')
      </if>
      <if test="params.subscribeScene != null">
-       and subscribe_scene = (#{params.subscribeScene})
+       and subscribe_scene = #{params.subscribeScene}
      </if>
      <if test="params.qrScene != null">
-       and qrScene = (#{params.qrScene})
+       and qrScene = #{params.qrScene}
      </if>
      <if test="params.qrSceneStr != null">
-       and qrSceneStr = (#{params.qrSceneStr})
+       and qrSceneStr = #{params.qrSceneStr}
      </if>
      <if test="params.isBlack != null">
-       and isBlack in (#{params.isBlack})
+       and isBlack in #{params.isBlack}
      </if>  
     </where>
     order by subscribe_time desc 
@@ -279,31 +279,44 @@
        and province = #{params.province}
      </if> 
      <if test="params.city != null">
-       and city = (#{params.city})
+       and city = #{params.city}
      </if>    
      <if test="params.subscribeTimeBegin != null">
-       and subscribeTime &gt; (#{params.subscribeTimeBegin})
+       and subscribeTime &gt; #{params.subscribeTimeBegin}
      </if>
      <if test="params.subscribeTimeEnd != null">
-       and subscribeTime &lt; (#{params.subscribeTimeEnd})
+       and subscribeTime &lt; #{params.subscribeTimeEnd}
      </if>     
      <if test="params.tagid != null">
-       and (#{params.tagid}) in tagid_list
+       and tagid_list like concat('%,',#{params.tagid},',%')
      </if>
      <if test="params.subscribeScene != null">
-       and subscribe_scene = (#{params.subscribeScene})
+       and subscribe_scene = #{params.subscribeScene}
      </if>
      <if test="params.qrScene != null">
-       and qrScene = (#{params.qrScene})
+       and qrScene = #{params.qrScene}
      </if>
      <if test="params.qrSceneStr != null">
-       and qrSceneStr = (#{params.qrSceneStr})
+       and qrSceneStr = #{params.qrSceneStr}
      </if>
      <if test="params.isBlack != null">
-       and isBlack in (#{params.isBlack})
+       and isBlack in #{params.isBlack}
      </if>  
     </where>  
   </select>
-    
+  
+  <!-- 为用户打标签 -->
+  <update id="addTag" parameterType="map" >
+   update tb_fans_basic t
+   set t.tagid_list = concat('0,',#{tagid,jdbcType=INTEGER},substring(t.tagid_list,2))
+   where t.open_id = #{openId,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 收回所有用户身上的标签 -->
+  <update id="removeTag" parameterType="map" >
+   update tb_fans_basic t
+   set t.tagid_list = REPLACE(t.tagid_list, concat(',',#{tagid,jdbcType=INTEGER},','), ',') 
+   where t.tagid_list like concat('%,',#{tagid,jdbcType=INTEGER},',%')
+  </update>
  
 </mapper>
