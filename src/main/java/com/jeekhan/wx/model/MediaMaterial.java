@@ -1,8 +1,11 @@
 package com.jeekhan.wx.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MediaMaterial {
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
     private Integer id;
 
     private String mediaType;
@@ -71,8 +74,8 @@ public class MediaMaterial {
         this.isNewsImg = isNewsImg == null ? null : isNewsImg.trim();
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public String getUpdateTime() {
+        return format.format(updateTime);
     }
 
     public void setUpdateTime(Date updateTime) {

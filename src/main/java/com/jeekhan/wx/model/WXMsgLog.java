@@ -1,9 +1,12 @@
 package com.jeekhan.wx.model;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WXMsgLog {
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
     private BigInteger id;
 
 	private String fromUser;
@@ -82,8 +85,8 @@ public class WXMsgLog {
 		this.isTpl = isTpl == null ? null : isTpl.trim();
 	}
 
-	public Date getCreateTime() {
-		return createTime;
+	public String getCreateTime() {
+		return format.format(createTime);
 	}
 
 	public void setCreateTime(Date createTime) {

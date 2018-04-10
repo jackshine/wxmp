@@ -1,11 +1,14 @@
 package com.jeekhan.wx.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class FansTag {
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
     private Integer tagId;
 
     @NotNull(message="标签名称不可为空！")
@@ -41,8 +44,8 @@ public class FansTag {
         this.tagDesc = tagDesc == null ? null : tagDesc.trim();
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public String getUpdateTime() {
+        return format.format(updateTime);
     }
 
     public void setUpdateTime(Date updateTime) {

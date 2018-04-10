@@ -1,8 +1,11 @@
 package com.jeekhan.wx.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WXQRCode {
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
     private Integer id;
 
 	private String isPerm;
@@ -75,8 +78,8 @@ public class WXQRCode {
 		this.localImgUrl = localImgUrl == null ? null : localImgUrl.trim();
 	}
 
-	public Date getCreateTime() {
-		return createTime;
+	public String getCreateTime() {
+		return format.format(createTime);
 	}
 
 	public void setCreateTime(Date createTime) {

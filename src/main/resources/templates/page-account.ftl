@@ -15,6 +15,7 @@
     <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
     <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
     
+    <script src="${contextPath}/script/date-format.js" type="text/javascript"></script>
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
@@ -213,7 +214,7 @@ var container = new Vue({
 function search(){
 	$.ajax({
 		url: '${contextPath}/qrcode/search',
-		data: {'pageCond':JSON.stringify(container.searchPageCond),'jsonParams':JSON.stringify(container.params)},
+		data: {'pageSize':container.searchPageCond.pageSize,'begin':container.searchPageCond.begin,'jsonParams':JSON.stringify(container.params)},
 		success: function(jsonRet,status,xhr){
 			if(jsonRet){
 				if(0 == jsonRet.errcode){
@@ -230,7 +231,6 @@ function search(){
 		dataType: 'json'
 	});
 }
-search();
 </script>
 
 <!-- 二维码申请模态对话框（Modal） -->

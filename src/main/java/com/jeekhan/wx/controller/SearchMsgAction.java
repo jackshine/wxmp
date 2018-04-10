@@ -54,7 +54,7 @@ public class SearchMsgAction {
 		JSONObject jsonRet = new JSONObject();
 		try {
 			Map<String,Object> condParams = new HashMap<String,Object>();
-			if(jsonParams == null) {
+			if(jsonParams != null) {
 				JSONObject params = new JSONObject(jsonParams);
 				//条件整合
 				if(params.has("msgType")) {

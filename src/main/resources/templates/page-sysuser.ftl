@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="${contextPath}/css/fileinput.min.css">  
     <script src="${contextPath}/script/fileinput.min.js"></script>
     <script src="${contextPath}/script/zh.js"></script>
+    
+    <script src="${contextPath}/script/date-format.js" type="text/javascript"></script>
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>

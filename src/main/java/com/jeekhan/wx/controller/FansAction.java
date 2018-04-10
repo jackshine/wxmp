@@ -599,12 +599,12 @@ public class FansAction {
 				}
 				if(params.has("channel")) {
 					if(params.getString("channel") != null && (params.getString("channel").trim().length()>0)){
-						condParams.put("channel", params.getString("channel"));
+						condParams.put("subscribeScene", params.getString("channel"));
 					}
 				}
 				if(params.has("tagid")) {
-					if(params.getString("tagid") != null && (params.getString("tagid").trim().length()>0)){
-						condParams.put("tagid", params.getString("tagid"));
+					if(params.get("tagid") != null && params.getInt("tagid")>0){
+						condParams.put("tagid", params.getInt("tagid"));
 					}
 				}
 				if(params.has("isBlack")) {
@@ -617,14 +617,14 @@ public class FansAction {
 						condParams.put("openId", params.getString("openId"));
 					}
 				}
-				if(params.has("beginTime")) {
-					if(params.getString("beginTime") != null && (params.getString("beginTime").trim().length()>0)){
-						condParams.put("beginTime", params.getString("beginTime"));
+				if(params.has("subscribeTimeBegin")) {
+					if(params.getString("subscribeTimeBegin") != null && (params.getString("subscribeTimeBegin").trim().length()>0)){
+						condParams.put("subscribeTimeBegin", params.getString("subscribeTimeBegin"));
 					}
 				}
-				if(params.has("endTime")) {
-					if(params.getString("endTime") != null && (params.getString("endTime").trim().length()>0)){
-						condParams.put("endTime", params.getString("endTime"));
+				if(params.has("subscribeTimeEnd")) {
+					if(params.getString("subscribeTimeEnd") != null && (params.getString("subscribeTimeEnd").trim().length()>0)){
+						condParams.put("subscribeTimeEnd", params.getString("subscribeTimeEnd"));
 					}
 				}
 			}

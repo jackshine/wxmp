@@ -99,10 +99,10 @@
        and ((expire_seconds &gt; 0 and ((now()-create_time) &lt; expire_seconds)) or expire_seconds = -1)
       </if>
 	  <if test="params.beginTime != null">
-	   and create_time &gt;= #{params.beginTime}
+	   and create_time &gt;= concat(#{params.beginTime},' 00:00:00')
 	  </if>
 	  <if test="params.endTime != null"> 
-	   and create_time &lt;= #{params.endTime} 
+	   and create_time &lt;= concat(#{params.endTime},' 23:59:59')
 	  </if>
     </where>
   </select>
@@ -128,10 +128,10 @@
        and ((expire_seconds &gt; 0 and ((now()-create_time) &lt; expire_seconds)) or expire_seconds = -1)
       </if>
 	  <if test="params.beginTime != null">
-	   and create_time &gt;= #{params.beginTime}
+	   and create_time &gt;= concat(#{params.beginTime},' 00:00:00')
 	  </if>
 	  <if test="params.endTime != null"> 
-	   and create_time &lt;= #{params.endTime} 
+	   and create_time &lt;= concat(#{params.endTime},' 23:59:59')
 	  </if>
     </where>
     order by create_time desc 

@@ -1,8 +1,11 @@
 package com.jeekhan.wx.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FansBasic {
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
     private String openId;
 
     private String nickname;
@@ -101,8 +104,8 @@ public class FansBasic {
         this.headimgurl = headimgurl == null ? null : headimgurl.trim();
     }
 
-    public Date getSubscribeTime() {
-        return subscribeTime;
+    public String getSubscribeTime() {
+        return format.format(this.subscribeTime);
     }
 
     public void setSubscribeTime(Date subscribeTime) {
@@ -165,8 +168,8 @@ public class FansBasic {
         this.isBlack = isBlack == null ? null : isBlack.trim();
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public String getUpdateTime() {
+    		return format.format(this.updateTime);
     }
 
     public void setUpdateTime(Date updateTime) {

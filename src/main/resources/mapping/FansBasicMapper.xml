@@ -230,10 +230,10 @@
        and city = #{params.city}
      </if>    
      <if test="params.subscribeTimeBegin != null">
-       and subscribeTime &gt; #{params.subscribeTimeBegin}
+       and subscribe_time &gt; concat(#{params.subscribeTimeBegin},' 00:00:00')
      </if>
      <if test="params.subscribeTimeEnd != null">
-       and subscribeTime &lt; #{params.subscribeTimeEnd}
+       and subscribe_time &lt; concat(#{params.subscribeTimeEnd},' 23:59:59')
      </if>     
      <if test="params.tagid != null">
        and tagid_list like concat('%,',#{params.tagid},',%')
@@ -248,7 +248,7 @@
        and qrSceneStr = #{params.qrSceneStr}
      </if>
      <if test="params.isBlack != null">
-       and isBlack in #{params.isBlack}
+       and is_black = #{params.isBlack}
      </if>  
     </where>
     order by subscribe_time desc 
@@ -282,11 +282,11 @@
        and city = #{params.city}
      </if>    
      <if test="params.subscribeTimeBegin != null">
-       and subscribeTime &gt; #{params.subscribeTimeBegin}
+       and subscribe_time &gt; concat(#{params.subscribeTimeBegin},' 00:00:00')
      </if>
      <if test="params.subscribeTimeEnd != null">
-       and subscribeTime &lt; #{params.subscribeTimeEnd}
-     </if>     
+       and subscribe_time &lt; concat(#{params.subscribeTimeEnd},' 23:59:59')
+     </if>       
      <if test="params.tagid != null">
        and tagid_list like concat('%,',#{params.tagid},',%')
      </if>
@@ -300,7 +300,7 @@
        and qrSceneStr = #{params.qrSceneStr}
      </if>
      <if test="params.isBlack != null">
-       and isBlack in #{params.isBlack}
+       and is_black = #{params.isBlack}
      </if>  
     </where>  
   </select>

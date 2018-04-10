@@ -1,5 +1,6 @@
 package com.jeekhan.wx.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.validation.constraints.Email;
@@ -8,6 +9,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class SysUser {
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
     private Integer id;
 
     @NotNull(message="用户名不可为空！")
@@ -95,8 +98,8 @@ public class SysUser {
 		this.introduce = introduce == null ? null : introduce.trim();
 	}
 
-	public Date getUpdateTime() {
-		return updateTime;
+	public String getUpdateTime() {
+		return format.format(updateTime);
 	}
 
 	public void setUpdateTime(Date updateTime) {
