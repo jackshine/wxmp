@@ -46,7 +46,7 @@
             标签／粉丝管理说明
           </div>
           <div class="panel-body">
-
+			使用用户标签管理的相关接口，实现对公众号的标签进行创建、查询、修改、删除等操作，也可以对用户进行打标签、取消标签等操作。
           </div>
         </div>
       </div>
@@ -176,7 +176,7 @@
                   <table class="table table-bordered table-striped table-hover ">
                    <thead>
    	                <tr>
-   	                  <th width="3%">&nbsp;&nbsp;<input type="checkbox" style="display:block;width:20px;height:20px"></th>
+   	                  <th width="3%">&nbsp;&nbsp;<input type="checkbox" style="display:block;width:20px;height:20px" @click="seleclAll"></th>
    	                  <th width="13%">OPENID</th><th width="6%">性别</th><th width="10%">省份</th><th width="13%">城市</th>
    	                  <th width="15%">标签列表</th><th width="13%">关注渠道</th><th width="6%">黑名单</th><th>关注时间</th>
    	                </tr>
@@ -184,7 +184,7 @@
                    <tbody> 
                      <tr v-for="item in datas">
                        <td><input type="checkbox" style="display:block;width:20px;height:20px" v-model="selected[item.openId]"></td>
-                       <td>{{item.openId}}</td>
+                       <td><a @click="showFansDetail(item.openId)">{{item.openId}}</a></td>
                        <td>{{getSex(item.sex)}}</td>
                        <td>{{item.province}}</td>
                        <td>{{item.city}}</td>
@@ -384,6 +384,26 @@ var tagMgrVue = new Vue({
 //=============================================================================================================================================
 //-----------------粉丝管理主界面--------------------
 //=============================================================================================================================================
+window.getSex=function(code){
+	if(code == '0') return '保密';
+	if(code == '1') return '男';
+	if(code == '2') return '女';
+	return code
+},
+window.getChannel=function(code){
+	for(key in fansMgrMainVue.metadata.channel){
+		if(key == code){
+			return fansMgrMainVue.metadata.channel[key]
+		}
+	}
+	return code;
+},
+window.getTagidList=function(val){
+	var temp = val.substring(2);
+	temp = temp.substring(0,temp.length-2);
+	return temp;
+}
+
 var fansMgrMainVue = new Vue({
 	el:'#fansMgrMain',
 	data:{
@@ -405,25 +425,9 @@ var fansMgrMainVue = new Vue({
 		}
 	},
 	methods:{
-		getSex: function(code){
-			if(code == '0') return '保密';
-			if(code == '1') return '男';
-			if(code == '2') return '女';
-			return code
-		},
-		getChannel: function(code){
-			for(key in this.metadata.channel){
-				if(key == code){
-					return this.metadata.channel[key]
-				}
-			}
-			return code;
-		},
-		getTagidList: function(val){
-			var temp = val.substring(2);
-			temp = temp.substring(0,temp.length-2);
-			return temp;
-		},
+		getSex: window.getSex,
+		getChannel: window.getChannel,
+		getTagidList: window.getTagidList,
 		goUpPage:function(event){
 			this.searchPageCond.begin = this.pageCond.begin - this.pageCond.pageSize;
 			this.searchPageCond.pageSize = this.pageCond.pageSize;
@@ -462,7 +466,7 @@ var fansMgrMainVue = new Vue({
 		addTag: function(){
 			var selectedArr = [];
 			for(var openId in this.selected){
-				if(this.selected[openId] == 1){
+				if(this.selected[openId]){
 					selectedArr.push(openId);
 				}
 			}
@@ -479,7 +483,7 @@ var fansMgrMainVue = new Vue({
 		removeTag: function(){
 			var selectedArr = [];
 			for(var openId in this.selected){
-				if(this.selected[openId] == 1){
+				if(this.selected[openId]){
 					selectedArr.push(openId);
 				}
 			}
@@ -495,19 +499,26 @@ var fansMgrMainVue = new Vue({
 		updateRemark: function(){
 			var selectedArr = [];
 			for(var openId in this.selected){
-				if(this.selected[openId] == 1){
+				if(this.selected[openId]){
 					selectedArr.push(openId);
 				}
 			}
-			if(selectedArr.length<1){
-				alert('请选择要修改备注的用户！');
+			if(selectedArr.length != 1){
+				alert('请选择要修改备注的用户，一次只可修改一个用户！');
 				return;
 			}
+			$("#fansRemarkMgrModal").modal('show');
+			for(var i=0;i<this.datas.length;i++){
+				if(this.datas[i].openId == openId){
+					fansRemarkMgrVue.params.remark = this.datas[i].remark;
+				}
+			}
+			fansRemarkMgrVue.params.openId = selectedArr.join(",");
 		},
 		black: function(){
 			var selectedArr = [];
 			for(var openId in this.selected){
-				if(this.selected[openId] == 1){
+				if(this.selected[openId]){
 					selectedArr.push(openId);
 				}
 			}
@@ -515,17 +526,88 @@ var fansMgrMainVue = new Vue({
 				alert('请选择要加入黑名单的用户！');
 				return;
 			}
+			$.ajax({
+				url: '${contextPath}/fans/fans/black',
+				data: {'openIds':selectedArr.join(",")},
+				success: function(jsonRet,status,xhr){
+					if(jsonRet){
+						if(0 == jsonRet.errcode){
+							alert("用户已成功加入黑名单！！!");
+							searchFans();
+						}else{//出现逻辑错误
+							alert(jsonRet.errmsg);
+						}
+					}else{
+						alert('系统数据访问失败！')
+					}
+				},
+				dataType: 'json'
+			});
 		},
 		unBlack: function(){
 			var selectedArr = [];
 			for(var openId in this.selected){
-				if(this.selected[openId] == 1){
+				if(this.selected[openId]){
 					selectedArr.push(openId);
 				}
 			}
 			if(selectedArr.length<1){
 				alert('请选择要移出黑名单的用户！');
 				return;
+			}
+			$.ajax({
+				url: '${contextPath}/fans/fans/unBlack',
+				data: {'openIds':selectedArr.join(",")},
+				success: function(jsonRet,status,xhr){
+					if(jsonRet){
+						if(0 == jsonRet.errcode){
+							alert("用户已成功移出黑名单！！!");
+							searchFans();
+						}else{//出现逻辑错误
+							alert(jsonRet.errmsg);
+						}
+					}else{
+						alert('系统数据访问失败！')
+					}
+				},
+				dataType: 'json'
+			});
+		},
+		seleclAll: function(){
+			for(var i=0;i<this.datas.length;i++){
+				var item = this.datas[i];
+				if(this.selected.hasOwnProperty(item.openId)){
+					this.selected[item.openId] = (this.selected[item.openId] ? false : true);
+				}else{
+					this.selected[item.openId] = true;
+				}
+			}
+			$("#fansMgrMain table input:checkbox").each(function () {     
+	            this.checked = !this.checked;    
+	        });
+		},
+		showFansDetail: function(openId){
+			$("#showFansDetailModal").modal('show');
+			for(var i=0;i<this.datas.length;i++){
+				if(this.datas[i].openId == openId){
+					showFansDetailVue.openId = this.datas[i].openId;
+					showFansDetailVue.nickname = this.datas[i].nickname;
+					showFansDetailVue.sex = this.datas[i].sex;
+					showFansDetailVue.language = this.datas[i].language;
+					showFansDetailVue.country = this.datas[i].country;
+					showFansDetailVue.province = this.datas[i].province;
+					showFansDetailVue.city = this.datas[i].city;
+					showFansDetailVue.headimgurl = this.datas[i].headimgurl;
+					showFansDetailVue.subscribeTime = this.datas[i].subscribeTime;
+					showFansDetailVue.unionid = this.datas[i].unionid;
+					showFansDetailVue.tagidList = this.datas[i].tagidList;
+					showFansDetailVue.remark = this.datas[i].remark;
+					showFansDetailVue.subscribeScene = this.datas[i].subscribeScene;
+					showFansDetailVue.qrScene = this.datas[i].qrScene;
+					showFansDetailVue.qrSceneStr = this.datas[i].qrSceneStr;
+					showFansDetailVue.isBlack = this.datas[i].isBlack;
+					showFansDetailVue.updateTime = this.datas[i].updateTime;
+				}
 			}
 		}
 	},
@@ -535,6 +617,7 @@ var fansMgrMainVue = new Vue({
 		}
 	}
 });
+
 function searchFans(){
 	$.ajax({
 		url: '${contextPath}/fans/fans/search',
@@ -628,8 +711,9 @@ var fansTagMgrVue = new Vue({
 					success: function(jsonRet,status,xhr){
 						if(jsonRet){
 							if(0 == jsonRet.errcode){
-								alert("标签【" + fansTagMgrVue.tagId + "】已成功" + (mode=="add"?"添加":"移除") + "！！!");
+								alert("标签【" + fansTagMgrVue.params.tagId + "】已成功" + (fansTagMgrVue.mode=="add"?"添加":"移除") + "！！!");
 								$("#fansTagMgrModal").modal('hide');
+								searchFans();
 							}else{//出现逻辑错误
 								alert(jsonRet.errmsg);
 							}
@@ -644,6 +728,261 @@ var fansTagMgrVue = new Vue({
 });
 </script>
 
+<!-- 粉丝备注管理模态对话框（Modal） -->
+<div class="modal fade " id="fansRemarkMgrModal" tabindex="-1" role="dialog" aria-labelledby="fansRemarkMgrModalLabel" aria-hidden="true" data-backdrop="static">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">× </button>
+            <h4 class="modal-title" id="fansRemarkMgrModalLabel">粉丝备注管理</h4>
+         </div>
+         <div class="modal-body">
+            <form class="form-horizontal" method ="post" action="add" role="form" >
+               <div class="form-group">
+               </div>
+			   <div class="form-group">
+			      <label class="col-sm-2 control-label">备注<span style="color:red" >*</span></label>
+			      <div class="col-sm-10">
+			         <input class="form-control" v-model="params.remark" maxLength=30 required placeholder="请输入粉丝备注，2-30个字符" >
+			      </div>
+			   </div>
+			   <div class="form-group">
+			      <label class="col-sm-2 control-label">已选择用户<span style="color:red" >*</span></label>
+			      <div class="col-sm-10">
+			         <input class="form-control" v-model="params.openId" readonly >
+			      </div>
+			   </div>
+			</form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-primary" v-on:click="submit">提交</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+         </div>
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+var fansRemarkMgrVue = new Vue({
+	el: '#fansRemarkMgrModal',
+	  data: {
+		  params:{
+			  reamrk:'',
+			  openId:''//选择的用户
+		  },
+	  },
+	  methods: {
+		  submit:function(){
+				if(!this.params.remark || this.params.remark.length<2 || this.params.remark.length>30){
+					alert("粉丝备注的长度为2-30个字符！");
+					return false;
+				}
+				if(!this.params.openId || this.params.openId.length<1){
+					alert("请选择要修改备注的粉丝用户！");
+					return false;
+				}
+				$.ajax({
+					url: '${contextPath}/fans/fans/updateRemark',
+					data: {'remark':this.params.remark,'openId':this.params.openId},
+					success: function(jsonRet,status,xhr){
+						if(jsonRet){
+							if(0 == jsonRet.errcode){
+								alert("粉丝备注修改成功！");
+								$("#fansRemarkMgrModal").modal('hide');
+								for(var i=0;i<fansMgrMainVue.datas.length;i++){//更新数据列表
+									var item = fansMgrMainVue.datas[i];
+									if(item.openId == fansRemarkMgrVue.params.openId){
+										item.remark = fansRemarkMgrVue.params.remark;
+									}
+								}
+							}else{//出现逻辑错误
+								alert(jsonRet.errmsg);
+							}
+						}else{
+							alert('系统数据访问失败！')
+						}
+					},
+					dataType: 'json'
+				});
+		  }
+	  }
+});
+</script>
+
+<!-- 粉丝详情显示模态对话框（Modal） -->
+<div class="modal fade " id="showFansDetailModal" tabindex="-1" role="dialog" aria-labelledby="showFansDetailModalLabel" aria-hidden="true" data-backdrop="static">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">× </button>
+            <h4 class="modal-title" id="showFansDetailModalLabel">粉丝详情显示</h4>
+         </div>
+         <div class="modal-body">
+            <form class="form-horizontal" role="form" >
+			 <div class="row" style="margin-top:0px">
+			    <div class="form-group" >
+			      <label class="col-sm-2 control-label">OPENID</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{openId}}</label>
+			      </div>
+			   </div>
+			 </div>
+			 <div class="row" style="margin-top:0px">
+			    <div class="form-group" >
+			      <label class="col-sm-2 control-label">昵称</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{nickname}}</label>
+			      </div>
+			   </div>
+			 </div>
+			 <div class="row" style="margin-top:0px">
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">性别</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{getSex(sex)}}</label>
+			      </div>
+			   </div>			   
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">语言</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{language}}</label>
+			      </div>
+			   </div>
+			 </div>
+			 <div class="row" style="margin-top:0px">			   
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">国家</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{country}}</label>
+			      </div>
+			   </div>			   
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">省份</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{province}}</label>
+			      </div>
+			   </div>
+			  </div>
+			   <div class="row" style="margin-top:0px">				   
+			    <div class=" form-group" >
+			      <label class="col-sm-2 control-label">城市</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{city}}</label>
+			      </div>
+			     </div>	
+			   </div>
+			   <div class="row" style="margin-top:0px">
+			     <div class="form-group" >
+			      <label class="col-sm-2 control-label">用户头像</label>
+			      <div class="col-sm-8">
+			         <img :src="headimgurl" alt="用户头像" />
+			      </div>
+			    </div>
+			  </div>	
+			  <div class="row" style="margin-top:0px">			   
+			    <div class=" form-group" >
+			      <label class="col-sm-2 control-label">关注时间</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{subscribeTime}}</label>
+			      </div>
+			    </div>
+			  </div>
+			  <div class="row" style="margin-top:0px">			   
+			    <div class=" form-group" >
+			      <label class="col-sm-2 control-label">unionid</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{unionid}}</label>
+			      </div>
+			   </div>
+			  </div>			   
+			   <div class="row" style="margin-top:0px">	
+			    <div class=" form-group" >
+			      <label class="col-sm-2 control-label">标签</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{getTagidList(tagidList)}}</label>
+			      </div>
+			    </div>
+			  </div>
+			  <div class="row" style="margin-top:0px">			   
+			    <div class=" form-group" >
+			      <label class="col-sm-2 control-label">备注</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{remark}}</label>
+			      </div>
+			     </div>	
+			   </div>
+			   <div class="row" style="margin-top:0px">			   
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">渠道来源</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{getChannel(subscribeScene)}}</label>
+			      </div>
+			    </div>
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">扫码ID</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{qrScene}}</label>
+			      </div>
+			    </div>
+			   </div>
+			   <div class="row" style="margin-top:0px">			   
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">扫码描述</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{qrSceneStr}}</label>
+			      </div>
+			    </div>			   
+			    <div class="col-xs-6 form-group" >
+			      <label class="col-sm-4 control-label">黑名单</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{isBlack=='1'?'是':'否'}}</label>
+			      </div>
+			    </div>	
+			    </div>
+			  <div class="row" style="margin-top:0px">			   
+			    <div class="form-group" >
+			      <label class="col-sm-2 control-label">更新时间</label>
+			      <div class="col-sm-8">
+			         <label class="form-control" >{{updateTime}}</label>
+			      </div>
+			   </div>
+			  </div>
+			</form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+         </div>
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+var showFansDetailVue = new Vue({
+	el: '#showFansDetailModal',
+  	data: {
+  		openId : '',
+  		nickname:'',
+  		sex:'',
+  		language:'',
+  		country:'',
+  		province:'',
+  		city:'',
+  		headimgurl:'',
+  		subscribeTime:'',
+  		unionid:'',
+  		tagidList:'',
+  		remark:'',
+  		subscribeScene:'',
+  		qrScene:'',
+  		qrSceneStr:'',
+  		isBlack:'',
+  		updateTime:''
+  	},
+  	methods:{
+  		getSex: window.getSex,
+		getChannel: window.getChannel,
+		getTagidList: window.getTagidList
+  	}
+});
+</script>
 <#if errmsg??>
 <!-- 错误提示模态框（Modal） -->
 <div class="modal fade " id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorTitle" aria-hidden="false" data-backdrop="static">

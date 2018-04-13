@@ -300,7 +300,7 @@ public class UserMgrHandle {
 	 */
 	public static JSONObject blackUsers(List<String> openIdList) throws JSONException{
 		String token = AccessToken.getAccessToken();
-		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=" + token ;
+		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
 		JSONArray array = new JSONArray();
 		for(String openId:openIdList){

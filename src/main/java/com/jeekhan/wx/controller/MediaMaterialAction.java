@@ -1,6 +1,18 @@
 package com.jeekhan.wx.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -10,12 +22,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jeekhan.wx.api.MediaMaterialHandle;
+import com.jeekhan.wx.dto.Operator;
+import com.jeekhan.wx.model.MediaMaterial;
+import com.jeekhan.wx.service.MediaMaterialService;
 import com.jeekhan.wx.utils.FileFilter;
+import com.jeekhan.wx.utils.PageCond;
 
 
 /**
@@ -25,6 +44,7 @@ import com.jeekhan.wx.utils.FileFilter;
  */
 @Controller
 @RequestMapping("/material")
+@SessionAttributes({"operator"})
 public class MediaMaterialAction {
 	
 	@Value("${sys.tmp-file-dir}")
@@ -35,6 +55,8 @@ public class MediaMaterialAction {
 	
 	@Autowired
 	private MediaMaterialHandle mediaMaterialHandle;
+	@Autowired
+	private MediaMaterialService mediaMaterialService;
 	
 	/**
 	 * 获取多媒体素材管理主页
@@ -63,7 +85,7 @@ public class MediaMaterialAction {
 	 * }
 	 * @throws JSONException 
 	 */
-	public JSONObject addTempMedia(@RequestParam(value="media")MultipartFile media,String type) throws JSONException{
+	public JSONObject addTempMedia(@RequestParam(value="media")MultipartFile media,String type,Operator operator) throws JSONException{
 		JSONObject jsonRet;
 		if(type == null || type.trim().length() == 0 ||
 				media == null || media.isEmpty() ) {
@@ -113,19 +135,29 @@ public class MediaMaterialAction {
 		try {
 			FileUtils.copyInputStreamToFile(media.getInputStream(), tmpMedia);
 			jsonRet = mediaMaterialHandle.addTempMedia(tmpMedia, type);
-			if(!jsonRet.has("errcode")) {
+			if(jsonRet.has("media_id")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
-			}
-			File materialDir = new File(this.materialFileDir);
-			if(!materialDir.exists()) {
-				materialDir.mkdirs();
-			}
-			if(jsonRet.has("media_id")) {
+				//保存于本地
+				File materialDir = new File(this.materialFileDir);
+				if(!materialDir.exists()) {
+					materialDir.mkdirs();
+				}
 				String mediaId = jsonRet.getString("media_id");
-				File file = new File(materialDir,"TEMP_TP" + type + "_" + mediaId + "." + ctype);
+				File file = new File(materialDir,"TEMP_TP" + type + "_" + UUID.randomUUID().toString() + "." + ctype);
 				FileUtils.copyFile(tmpMedia, file);
+				MediaMaterial material = new MediaMaterial();
+				material.setContent(file.getName());
+				material.setIsNewsImg("0");
+				material.setIsTemp("1");
+				material.setMediaId(mediaId);
+				material.setMediaType(type);
+				material.setMediaUrl("  ");
+				material.setStatus("1");
+				material.setUpdateUser(operator.getLoginUserId());
+				this.mediaMaterialService.add(material);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonRet = new JSONObject();
@@ -148,7 +180,7 @@ public class MediaMaterialAction {
 	 * }
 	 * @throws JSONException 
 	 */
-	public JSONObject addNewsImg(@RequestParam(value="media")MultipartFile media) throws JSONException{
+	public JSONObject addNewsImg(@RequestParam(value="media")MultipartFile media,Operator operator) throws JSONException{
 		JSONObject jsonRet;
 		if(media == null || media.isEmpty() ) {
 			jsonRet = new JSONObject();
@@ -181,10 +213,20 @@ public class MediaMaterialAction {
 			if(!materialDir.exists()) {
 				materialDir.mkdirs();
 			}
-			if(jsonRet.has("media_id")) {
-				String mediaId = jsonRet.getString("media_id");
-				File file = new File(materialDir,"TEMP_TPimage" + "_" + mediaId + "." + ctype);
+			if(jsonRet.has("url")) {
+				//String mediaId = jsonRet.getString("media_id");
+				File file = new File(materialDir,"TEMP_TPimage" + "_" + UUID.randomUUID().toString() + "." + ctype);
 				FileUtils.copyFile(tmpMedia, file);
+				MediaMaterial material = new MediaMaterial();
+				material.setContent(file.getName());
+				material.setIsNewsImg("1");
+				material.setIsTemp("1");
+				material.setMediaId(" ");
+				material.setMediaType("image");
+				material.setMediaUrl(jsonRet.getString("url"));
+				material.setStatus("1");
+				material.setUpdateUser(operator.getLoginUserId());
+				this.mediaMaterialService.add(material);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -214,7 +256,7 @@ public class MediaMaterialAction {
 	 *  }
 	 * @throws JSONException 
 	 */
-	public JSONObject addNews(String jsonNews) throws JSONException{
+	public JSONObject addNews(String jsonNews,Operator operator) throws JSONException{
 		JSONObject jsonRet;
 		try {
 			JSONObject jsonObj = new JSONObject(jsonNews);
@@ -253,14 +295,18 @@ public class MediaMaterialAction {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
 			}
-			File materialDir = new File(this.materialFileDir);
-			if(!materialDir.exists()) {
-				materialDir.mkdirs();
-			}
 			if(jsonRet.has("media_id")) {
 				String mediaId = jsonRet.getString("media_id");
-				File file = new File(materialDir,"TEMP_TPnews" + "_" + mediaId + ".txt");
-				FileUtils.write(file, jsonNews, "utf8");
+				MediaMaterial material = new MediaMaterial();
+				material.setContent(jsonNews);
+				material.setIsNewsImg("0");
+				material.setIsTemp("1");
+				material.setMediaId(mediaId);
+				material.setMediaType("news");
+				material.setMediaUrl("");
+				material.setStatus("1");
+				material.setUpdateUser(operator.getLoginUserId());
+				this.mediaMaterialService.add(material);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -289,7 +335,7 @@ public class MediaMaterialAction {
 	 * }
 	 * @throws JSONException 
 	 */
-	public JSONObject addPermanentNews(String jsonNews) throws JSONException{
+	public JSONObject addPermanentNews(String jsonNews,Operator operator) throws JSONException{
 		JSONObject jsonRet;
 		try {
 			JSONObject jsonObj = new JSONObject(jsonNews);
@@ -324,18 +370,21 @@ public class MediaMaterialAction {
 				}
 			}
 			jsonRet = mediaMaterialHandle.addPermanentNews(jsonNews);
-			if(!jsonRet.has("errcode")) {
+			if(jsonRet.has("media_id")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
-			}
-			File materialDir = new File(this.materialFileDir);
-			if(!materialDir.exists()) {
-				materialDir.mkdirs();
-			}
-			if(jsonRet.has("media_id")) {
+				
 				String mediaId = jsonRet.getString("media_id");
-				File file = new File(materialDir,"PERM_TPnews" + "_" + mediaId + ".txt");
-				FileUtils.write(file, jsonNews, "utf8");
+				MediaMaterial material = new MediaMaterial();
+				material.setContent(jsonNews);
+				material.setIsNewsImg("0");
+				material.setIsTemp("0");
+				material.setMediaId(mediaId);
+				material.setMediaType("news");
+				material.setMediaUrl("");
+				material.setStatus("1");
+				material.setUpdateUser(operator.getLoginUserId());
+				this.mediaMaterialService.add(material);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -358,7 +407,7 @@ public class MediaMaterialAction {
 	 *  }
 	 * @throws JSONException 
 	 */
-	public JSONObject addPernamentMedia(@RequestParam(value="media")MultipartFile media ,String type) throws JSONException{
+	public JSONObject addPernamentMedia(@RequestParam(value="media")MultipartFile media ,String type,Operator operator) throws JSONException{
 		JSONObject jsonRet;
 		if(type == null || type.trim().length() == 0 ||
 				media == null || media.isEmpty() ) {
@@ -402,18 +451,28 @@ public class MediaMaterialAction {
 		try {
 			FileUtils.copyInputStreamToFile(media.getInputStream(), tmpMedia);
 			jsonRet = mediaMaterialHandle.addTempMedia(tmpMedia, type);
-			if(!jsonRet.has("errcode")) {
+			if(jsonRet.has("media_id")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
-			}
-			File materialDir = new File(this.materialFileDir);
-			if(!materialDir.exists()) {
-				materialDir.mkdirs();
-			}
-			if(jsonRet.has("media_id")) {
+				
+				File materialDir = new File(this.materialFileDir);
+				if(!materialDir.exists()) {
+					materialDir.mkdirs();
+				}
 				String mediaId = jsonRet.getString("media_id");
-				File file = new File(materialDir,"PERM_TP" + type + "_" + mediaId + "." + ctype);
+				File file = new File(materialDir,"PERM_TP" + type + "_" + UUID.randomUUID().toString() + "." + ctype);
 				FileUtils.copyFile(tmpMedia, file);
+				
+				MediaMaterial material = new MediaMaterial();
+				material.setContent(file.getName());
+				material.setIsNewsImg("0");
+				material.setIsTemp("0");
+				material.setMediaId(mediaId);
+				material.setMediaType(type);
+				material.setMediaUrl(jsonRet.getString("url"));
+				material.setStatus("1");
+				material.setUpdateUser(operator.getLoginUserId());
+				this.mediaMaterialService.add(material);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -438,7 +497,7 @@ public class MediaMaterialAction {
 	 *  }
 	 * @throws JSONException 
 	 */
-	public JSONObject addPernamentVideo(@RequestParam(value="media")MultipartFile media,String title,String introduction) throws JSONException{
+	public JSONObject addPernamentVideo(@RequestParam(value="media")MultipartFile media,String title,String introduction,Operator operator) throws JSONException{
 		JSONObject jsonRet;
 		if(media == null || media.isEmpty() || title == null || title.trim().length()<1 || introduction == null || introduction.trim().length()<1) {
 			jsonRet = new JSONObject();
@@ -464,18 +523,28 @@ public class MediaMaterialAction {
 		try {
 			FileUtils.copyInputStreamToFile(media.getInputStream(), tmpMedia);
 			jsonRet = mediaMaterialHandle.addPernamentVideo(tmpMedia, title, introduction);
-			if(!jsonRet.has("errcode")) {
+			if(jsonRet.has("media_id")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
-			}
-			File materialDir = new File(this.materialFileDir);
-			if(!materialDir.exists()) {
-				materialDir.mkdirs();
-			}
-			if(jsonRet.has("media_id")) {
+			
+				File materialDir = new File(this.materialFileDir);
+				if(!materialDir.exists()) {
+					materialDir.mkdirs();
+				}
 				String mediaId = jsonRet.getString("media_id");
-				File file = new File(materialDir,"PERM_TPvideo" + "_" + mediaId + "." + ctype);
+				File file = new File(materialDir,"PERM_TPvideo" + "_" + UUID.randomUUID().toString() + "." + ctype);
 				FileUtils.copyFile(tmpMedia, file);
+				
+				MediaMaterial material = new MediaMaterial();
+				material.setContent(file.getName());
+				material.setIsNewsImg("0");
+				material.setIsTemp("0");
+				material.setMediaId(mediaId);
+				material.setMediaType("video");
+				material.setMediaUrl(jsonRet.getString("url"));
+				material.setStatus("1");
+				material.setUpdateUser(operator.getLoginUserId());
+				this.mediaMaterialService.add(material);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -492,43 +561,84 @@ public class MediaMaterialAction {
 	/**
 	 * 获取图文素材，从本地获取
 	 * @param mediaId	素材ID
-	 * @param isTemp		是否临时素材
+	 * @param isTemp		是否临时
 	 * @return 图文信息
 	 * @throws JSONException 
 	 */
-	public JSONObject getNews(String mediaId,boolean isTemp) throws JSONException{
-		JSONObject jsonRet;
-		File file = new File(this.materialFileDir,(isTemp?"TEMP":"PERM") + "_TPnews" + "_" + mediaId + ".txt");
-		String strNews;
+	@RequestMapping("/getnews/{mediaId}/{isTemp}")
+	@ResponseBody
+	public String getNews(@PathVariable("mediaId")String mediaId,@PathVariable("isTemp")String isTemp) throws JSONException{
+		JSONObject jsonRet = new JSONObject();
 		try {
-			strNews = FileUtils.readFileToString(file, "utf8");
-			jsonRet = new JSONObject(strNews);
-		} catch (Exception e) {
+			Map<String,Object> condParams = new HashMap<String,Object>();
+			//条件整合
+			condParams.put("isTemp", isTemp);
+			condParams.put("mediaId", mediaId);
+
+			List<MediaMaterial> datas = this.mediaMaterialService.getAll(condParams, new PageCond(0,1));
+			jsonRet.put("datas", new JSONArray(datas));
+			jsonRet.put("errcode", 0);
+			jsonRet.put("errmsg", "ok");
+		}catch(Exception e) {
 			e.printStackTrace();
-			jsonRet = new JSONObject();
-			jsonRet.put("errcode", -777);
-			jsonRet.put("errmsg", "系统异常，异常信息：" + e.getMessage());
+			jsonRet.put("errcode", -999);
+			jsonRet.put("errmsg","系统异常，异常信息：" + e.getMessage());
 		}
-		return jsonRet;
+		return jsonRet.toString();
 	}
 	
 	/**
-	 * 获取其他类型的素材(image,thumb,vioce,video)
-	 * @param mediaId	素材ID
-	 * @param type	素材类型
-	 * @param isTemp		是否临时素材
-	 * @return
-	 * @throws JSONException 
+	 * 显示二维码图片
+	 * @param picName	图片名称
+	 * @param out
+	 * @throws IOException 
 	 */
-	public File getMedia(String mediaId,String type,boolean isTemp){
-		File materialDir = new File(this.materialFileDir);
-		String fileName = (isTemp?"TEMP":"PERM") + "_TP" + type + "_" + mediaId;
-		File[] files = materialDir.listFiles(new FileFilter(fileName));
-		File mediaFile = null;
-		if(files != null && files.length>0){
-			mediaFile = files[0];
+	@RequestMapping(value="/getmedia/{filename}")
+	public void showMedia(@PathVariable("filename")String filename,OutputStream out,HttpServletRequest request,HttpServletResponse response) throws IOException{
+		File file = new File(this.materialFileDir,filename);
+		FileInputStream fis = new FileInputStream(file);
+		try {
+			Map<String,Object> condParams = new HashMap<String,Object>();
+			condParams.put("filename", filename);
+			List<MediaMaterial> datas = this.mediaMaterialService.getAll(condParams, new PageCond(0,1));
+			if(datas == null || datas.size()<1) {
+				return;
+			}
+			MediaMaterial material = datas.get(0);
+			String mediaType = material.getMediaType();
+			if("image".equals(mediaType) || "thumb".equals(mediaType)) {
+				response.setContentType("image/*");
+				BufferedImage image = ImageIO.read(file);
+				OutputStream os = response.getOutputStream();  
+				String type = file.getName().substring(file.getName().lastIndexOf('.')+1);
+				ImageIO.write(image, type, os);  
+				return;
+			}
+			if("voice".equals(mediaType)) {
+				response.setContentType("audio/*");
+				byte[] buff = new byte[1024];
+				
+				int length = 0;
+				while((length = fis.read(buff)) != -1) {
+					out.write(buff, 0, length);
+				}
+				return;
+			}
+			if("video".equals(mediaType)) {
+				response.setContentType("video/*");
+				byte[] buff = new byte[1024];
+				
+				int length = 0;
+				while((length = fis.read(buff)) != -1) {
+					out.write(buff, 0, length);
+				}
+				return;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			fis.close();
 		}
-		return mediaFile;
 	}
 	
 	/**
@@ -685,7 +795,80 @@ public class MediaMaterialAction {
 			jsonRet.put("errmsg", "媒体类型只可为图片（image）、语音（voice）、视频（video）、图文（news）！");
 			return jsonRet;
 		}
-		
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param jsonParams 查询条件JSON格式
+	 * @param pageCond	分页信息
+	 * @return
+	 * @throws JSONException 
+	 */
+	@RequestMapping("/search")
+	@ResponseBody
+	public String searchAll(String jsonParams,PageCond pageCond) throws JSONException {
+		JSONObject jsonRet = new JSONObject();
+		try {
+			Map<String,Object> condParams = new HashMap<String,Object>();
+			if(jsonParams != null) {
+				JSONObject params = new JSONObject(jsonParams);
+				//条件整合
+				if(params.has("isTemp")) {
+					if(params.getString("isTemp") != null && (params.getString("isTemp").trim().length()>0)){
+						condParams.put("isTemp", params.getString("isTemp"));
+					}
+				}
+				if(params.has("mediaType")) {
+					if(params.getString("mediaType") != null && (params.getString("mediaType").trim().length()>0)){
+						condParams.put("mediaType", params.getString("mediaType"));
+					}
+				}
+				if(params.has("isNewsImg")) {
+					if(params.getString("isNewsImg") != null && (params.getString("isNewsImg").trim().length()>0)){
+						condParams.put("isNewsImg", params.getString("isNewsImg"));
+					}
+				}
+				if(params.has("beginTime")) {
+					if(params.getString("beginTime") != null && (params.getString("beginTime").trim().length()>0)){
+						condParams.put("beginTime", params.getString("beginTime"));
+					}
+				}
+				if(params.has("endTime")) {
+					if(params.getString("endTime") != null && (params.getString("endTime").trim().length()>0)){
+						condParams.put("endTime", params.getString("endTime"));
+					}
+				}
+			}
+			if(pageCond == null) {
+				pageCond = new PageCond(0,20);
+			}
+			if(pageCond.getBegin()<0) {
+				pageCond.setBegin(0);
+			}
+			if(pageCond.getPageSize() < 2 || pageCond.getPageSize() > 100) {
+				pageCond.setPageSize(20);
+			}
+			
+			int cnt = this.mediaMaterialService.countAll(condParams);
+			pageCond.setCount(cnt);
+			if(cnt > 0) {
+			List<MediaMaterial> datas = this.mediaMaterialService.getAll(condParams, pageCond);
+				jsonRet.put("datas", new JSONArray(datas));
+			}
+			JSONObject jaonPage = new JSONObject();
+			jaonPage.put("pageSize", pageCond.getPageSize());
+			jaonPage.put("begin", pageCond.getBegin());
+			jaonPage.put("count", pageCond.getCount());
+			jsonRet.put("errcode", 0);
+			jsonRet.put("errmsg", "ok");
+			jsonRet.put("pageCond", jaonPage);
+		}catch(Exception e) {
+			e.printStackTrace();
+			jsonRet.put("errcode", -999);
+			jsonRet.put("errmsg","系统异常，异常信息：" + e.getMessage());
+		}
+		return jsonRet.toString();
+	}
+	
 }

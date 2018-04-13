@@ -45,7 +45,11 @@ public class FansTag {
     }
 
     public String getUpdateTime() {
-        return format.format(updateTime);
+    		if(this.updateTime != null) {
+    			return format.format(updateTime);
+    		}else {
+    			return null;
+    		}
     }
 
     public void setUpdateTime(Date updateTime) {

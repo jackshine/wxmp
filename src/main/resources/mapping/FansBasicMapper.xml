@@ -308,7 +308,7 @@
   <!-- 为用户打标签 -->
   <update id="addTag" parameterType="map" >
    update tb_fans_basic t
-   set t.tagid_list = concat('0,',#{tagid,jdbcType=INTEGER},substring(t.tagid_list,2))
+   set t.tagid_list = concat('0,',#{tagid,jdbcType=INTEGER},substring(REPLACE(t.tagid_list, concat(',',#{tagid,jdbcType=INTEGER},','), ','),2))
    where t.open_id = #{openId,jdbcType=VARCHAR}
   </update>
   

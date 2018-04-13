@@ -504,8 +504,8 @@ public class FansAction {
 		}
 		openIds = openIds.trim();
 		String[] arr = openIds.split(",");
-		if(arr.length > 0) {
-			jsonRet.put("errcode", "-999");
+		if(arr.length > 20) {
+			jsonRet.put("errcode", -999);
 			jsonRet.put("errmsg", "一次只能拉黑20个用户！");
 			return jsonRet.toString();
 		}
@@ -515,7 +515,7 @@ public class FansAction {
 		}
 		try {
 			jsonRet = UserMgrHandle.blackUsers(openIdList);
-			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") ==0) {
+			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
 				this.fansBasicService.blackFans(openIdList);
 			}
 		} catch (JSONException e) {
@@ -544,7 +544,7 @@ public class FansAction {
 		}
 		openIds = openIds.trim();
 		String[] arr = openIds.split(",");
-		if(arr.length > 0) {
+		if(arr.length > 20) {
 			jsonRet.put("errcode", "-999");
 			jsonRet.put("errmsg", "一次只能拉黑20个用户！");
 			return jsonRet.toString();
@@ -555,7 +555,7 @@ public class FansAction {
 		}
 		try {
 			jsonRet = UserMgrHandle.blackUsers(openIdList);
-			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") ==0) {
+			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
 				this.fansBasicService.unBlackFans(openIdList);
 			}
 		} catch (JSONException e) {

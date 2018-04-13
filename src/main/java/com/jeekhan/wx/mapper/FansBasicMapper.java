@@ -47,5 +47,5 @@ public interface FansBasicMapper {
 	 * @param tagId
 	 * @return
 	 */
-    int addTag(@Param("openId")String openId,@Param("tagId")Integer tagId);
+    int addTag(@Param("openId")String openId,@Param("tagid")Integer tagId);
 }

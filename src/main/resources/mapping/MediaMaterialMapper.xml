@@ -22,16 +22,16 @@
     content
   </sql>
   
-  <select id="selectById" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+  <select id="selectById" parameterType="biginteger" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from tb_media_material
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}  and `status` in ('1') 
   </select>
   
-  <delete id="deleteById" parameterType="java.lang.Integer">
+  <delete id="deleteById" parameterType="biginteger">
     delete from tb_media_material
     where id = #{id,jdbcType=INTEGER}
   </delete>
@@ -82,6 +82,67 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+   <select id="countAll" parameterType="map" resultType="int">
+    select count(1)
+    from tb_media_material
+    <where>
+       and `status` in ('1') 
+      <if test="params.mediaId != null">
+       and media_id = #{params.mediaId,jdbcType=CHAR}
+      </if>
+      <if test="params.filename != null">
+       and content = #{params.content,jdbcType=LONGVARCHAR},
+      </if>      
+      <if test="params.isTemp != null">
+       and is_temp = #{params.isTemp,jdbcType=CHAR}
+      </if>
+      <if test="params.isNewsImg != null">
+       and is_news_img = #{params.isNewsImg,jdbcType=CHAR}
+      </if>
+      <if test="params.mediaType != null">
+       and media_type = #{params.mediaType,jdbcType=VARCHAR}
+      </if>
+	  <if test="params.beginTime != null">
+	   and update_time &gt;= concat(#{params.beginTime},' 00:00:00')
+	  </if>
+	  <if test="params.endTime != null"> 
+	   and update_time &lt;= concat(#{params.endTime},' 23:59:59')
+	  </if>
+	  
+    </where>
+  </select>
+   
+  <select id="selectAll" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_media_material
+    <where>
+       and `status` in ('1') 
+      <if test="params.mediaId != null">
+       and media_id = #{params.mediaId,jdbcType=CHAR}
+      </if>
+      <if test="params.filename != null">
+       and content = #{params.content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="params.isTemp != null">
+       and is_temp = #{params.isTemp,jdbcType=CHAR}
+      </if>
+      <if test="params.isNewsImg != null">
+       and is_news_img = #{params.isNewsImg,jdbcType=CHAR}
+      </if>
+      <if test="params.mediaType != null">
+       and media_type = #{params.mediaType,jdbcType=VARCHAR}
+      </if>
+	  <if test="params.beginTime != null">
+	   and update_time &gt;= concat(#{params.beginTime},' 00:00:00')
+	  </if>
+	  <if test="params.endTime != null"> 
+	   and update_time &lt;= concat(#{params.endTime},' 23:59:59')
+	  </if>
+    </where>
+    order by update_time desc 
+    limit #{pageCond.begin},#{pageCond.pageSize}
+  </select>
 
 </mapper>
 

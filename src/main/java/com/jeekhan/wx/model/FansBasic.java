@@ -105,7 +105,11 @@ public class FansBasic {
     }
 
     public String getSubscribeTime() {
-        return format.format(this.subscribeTime);
+    		if(this.subscribeTime != null) {
+    			return format.format(this.subscribeTime);
+    		}else {
+    			return null;
+    		}
     }
 
     public void setSubscribeTime(Date subscribeTime) {
@@ -169,7 +173,11 @@ public class FansBasic {
     }
 
     public String getUpdateTime() {
-    		return format.format(this.updateTime);
+    		if(this.updateTime != null) {
+    			return format.format(this.updateTime);
+    		}else {
+    			return null;
+    		}
     }
 
     public void setUpdateTime(Date updateTime) {

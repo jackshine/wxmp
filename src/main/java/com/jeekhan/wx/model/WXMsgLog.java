@@ -86,7 +86,11 @@ public class WXMsgLog {
 	}
 
 	public String getCreateTime() {
-		return format.format(createTime);
+		if(this.createTime != null) {
+			return format.format(this.createTime);
+		}else {
+			return null;
+		}
 	}
 
 	public void setCreateTime(Date createTime) {

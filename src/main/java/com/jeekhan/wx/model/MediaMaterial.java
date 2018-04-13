@@ -1,12 +1,13 @@
 package com.jeekhan.wx.model;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MediaMaterial {
 	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	
-    private Integer id;
+    private BigInteger id;
 
     private String mediaType;
 
@@ -26,11 +27,11 @@ public class MediaMaterial {
 
     private String content;
 
-    public Integer getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -75,7 +76,11 @@ public class MediaMaterial {
     }
 
     public String getUpdateTime() {
-        return format.format(updateTime);
+    		if(this.updateTime != null) {
+    			return format.format(updateTime);
+    		}else {
+    			return null;
+    		}
     }
 
     public void setUpdateTime(Date updateTime) {
