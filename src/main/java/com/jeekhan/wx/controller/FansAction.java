@@ -41,6 +41,8 @@ import com.jeekhan.wx.utils.PageCond;
 @Controller
 @RequestMapping("/fans")
 public class FansAction {
+	@Autowired
+	private UserMgrHandle userMgrHandle;
 	
 	@Autowired
 	private FansTagService  fansTagService;
@@ -81,7 +83,7 @@ public class FansAction {
 				jsonRet.put("errcode", -666);
 				return jsonRet.toString();
 			}
-			jsonRet = UserMgrHandle.addTag(fansTag.getTagName());
+			jsonRet = userMgrHandle.addTag(fansTag.getTagName());
 			if(jsonRet.has("tag")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
@@ -148,7 +150,7 @@ public class FansAction {
 				jsonRet.put("errcode", -666);
 				return jsonRet.toString();
 			}
-			jsonRet = UserMgrHandle.updateTag(fansTag.getTagName(), fansTag.getTagId());
+			jsonRet = userMgrHandle.updateTag(fansTag.getTagName(), fansTag.getTagId());
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
 				this.fansTagService.update(fansTag);
 			}
@@ -177,7 +179,7 @@ public class FansAction {
 			return jsonRet.toString();
 		}
 		try {
-			jsonRet = UserMgrHandle.deleteTag(tagId);
+			jsonRet = userMgrHandle.deleteTag(tagId);
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
 				this.fansTagService.delete(tagId);
 			}
@@ -214,7 +216,7 @@ public class FansAction {
 			return jsonRet;
 		}
 		try {
-			JSONObject jsonRet = UserMgrHandle.getUsersByTag(tagId, beginOpenId);
+			JSONObject jsonRet = userMgrHandle.getUsersByTag(tagId, beginOpenId);
 			if(!jsonRet.has("errcode")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
@@ -252,7 +254,7 @@ public class FansAction {
 			openIdList.add(openId);
 		}
 		try {
-			jsonRet = UserMgrHandle.addTagToUsers(openIdList, tagId);
+			jsonRet = userMgrHandle.addTagToUsers(openIdList, tagId);
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") ==0) {
 				this.fansBasicService.addTag2Fanses(openIdList, tagId);
 			}
@@ -287,7 +289,7 @@ public class FansAction {
 			openIdList.add(openId);
 		}
 		try {
-			jsonRet = UserMgrHandle.moveTagFromUsers(openIdList, tagId);
+			jsonRet = userMgrHandle.moveTagFromUsers(openIdList, tagId);
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") ==0) {
 				this.fansBasicService.removeTagFromFanses(tagId);
 			}
@@ -315,7 +317,7 @@ public class FansAction {
 		}
 		openId = openId.trim();
 		try {
-			JSONObject jsonRet = UserMgrHandle.getTagsOnUser(openId);
+			JSONObject jsonRet = userMgrHandle.getTagsOnUser(openId);
 			if(!jsonRet.has("errcode")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
@@ -354,7 +356,7 @@ public class FansAction {
 			return jsonRet.toString();
 		}
 		try {
-			jsonRet = UserMgrHandle.updateRemark4User(openId, remark);
+			jsonRet = userMgrHandle.updateRemark4User(openId, remark);
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") ==0) {
 				this.fansBasicService.updateRemark(openId, remark);
 			}
@@ -403,8 +405,8 @@ public class FansAction {
 		}
 		openId = openId.trim();
 		try {
-			jsonRet = UserMgrHandle.getUserInfo(openId);
-			if(!jsonRet.has("errcode")) {
+			jsonRet = userMgrHandle.getUserInfo(openId);
+			if(jsonRet.has("openid")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
 				//更新用户信息
@@ -439,7 +441,7 @@ public class FansAction {
 			beginOpenId = "";
 		}
 		try {
-			JSONObject jsonRet = UserMgrHandle.getUsers(beginOpenId);
+			JSONObject jsonRet = userMgrHandle.getUsers(beginOpenId);
 			if(!jsonRet.has("errcode")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
@@ -471,7 +473,7 @@ public class FansAction {
 	public JSONObject getBlackFans(@RequestParam(value="beginOpenId",required=false)String beginOpenId) throws JSONException {
 		beginOpenId = beginOpenId.trim();
 		try {
-			JSONObject jsonRet = UserMgrHandle.getBlackUsers(beginOpenId);
+			JSONObject jsonRet = userMgrHandle.getBlackUsers(beginOpenId);
 			if(!jsonRet.has("errcode")) {
 				jsonRet.put("errcode", 0);
 				jsonRet.put("errmsg", "ok");
@@ -514,7 +516,7 @@ public class FansAction {
 			openIdList.add(openId);
 		}
 		try {
-			jsonRet = UserMgrHandle.blackUsers(openIdList);
+			jsonRet = userMgrHandle.blackUsers(openIdList);
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
 				this.fansBasicService.blackFans(openIdList);
 			}
@@ -554,7 +556,7 @@ public class FansAction {
 			openIdList.add(openId);
 		}
 		try {
-			jsonRet = UserMgrHandle.blackUsers(openIdList);
+			jsonRet = userMgrHandle.blackUsers(openIdList);
 			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
 				this.fansBasicService.unBlackFans(openIdList);
 			}

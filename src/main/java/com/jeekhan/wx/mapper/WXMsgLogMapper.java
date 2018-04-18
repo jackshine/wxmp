@@ -53,5 +53,10 @@ public interface WXMsgLogMapper {
 	 */
 	int updateRespInfo(@Param("recvId")BigInteger recvId,@Param("respId")BigInteger respId );
     
+    /**
+     * 获取待注册的粉丝用户
+     * @return
+     */
+    List<WXMsgLog> select4RegistFans();
 }
 

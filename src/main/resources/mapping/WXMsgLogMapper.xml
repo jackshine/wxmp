@@ -226,4 +226,14 @@
    order by create_time desc
    limit #{pageCond.begin},#{pageCond.pageSize}
   </select>
+  
+  <select id="select4RegistFans" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+     from tb_wxmsg_log 
+    where msg_type = 'event' and event_type = 'subscribe' and `status`='0'
+    order by create_time 
+    limit 0,100
+  </select>
+  
 </mapper>

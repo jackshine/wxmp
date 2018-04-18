@@ -85,4 +85,12 @@ public class WXMsgLogServiceImpl implements WXMsgLogService{
 		}
 		return -1;
 	}
+	
+	/**
+     * 获取待注册的粉丝用户
+     * @return
+     */
+    public List<WXMsgLog> get4RegistFans(){
+    		return this.wXMsgLogMapper.select4RegistFans();
+    }
 }

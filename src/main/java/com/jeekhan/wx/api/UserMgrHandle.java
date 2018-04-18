@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.jeekhan.wx.utils.HttpUtils;
 
@@ -15,6 +16,7 @@ import com.jeekhan.wx.utils.HttpUtils;
  * @author Jee Khan
  *
  */
+@Component
 public class UserMgrHandle {
 	private static Logger log = LoggerFactory.getLogger(UserMgrHandle.class);
 	
@@ -25,7 +27,7 @@ public class UserMgrHandle {
 	 * @return { "tag":{ "id":134,"name":"广东"} } 或 { "errcode":-1 "errmsg":"系统繁忙" }
 	 * @throws JSONException
 	 */
-	public static JSONObject addTag(String tagName) throws JSONException{
+	public JSONObject addTag(String tagName) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/create?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -47,7 +49,7 @@ public class UserMgrHandle {
 	 *  count :此标签下粉丝数
 	 * @throws JSONException 
 	 */
-	public static JSONObject getAllTags() throws JSONException{
+	public JSONObject getAllTags() throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/get?access_token=" + token ;
 		log.info("查询所有已创建的标签(GET):" + url);
@@ -64,7 +66,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject updateTag(String tagName,int tagId) throws JSONException{
+	public JSONObject updateTag(String tagName,int tagId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/update?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -87,7 +89,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject deleteTag(int tagId) throws JSONException{
+	public JSONObject deleteTag(int tagId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -107,7 +109,7 @@ public class UserMgrHandle {
 	 * @return {"tagid_list":[ 134, 2] } 或 { "errcode":-1,"errmsg":""}
 	 * @throws JSONException 
 	 */
-	public static JSONObject getTagsOnUser(String openId) throws JSONException{
+	public JSONObject getTagsOnUser(String openId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -127,7 +129,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject moveTagFromUsers(List<String> openIdList,int tagId) throws JSONException{
+	public JSONObject moveTagFromUsers(List<String> openIdList,int tagId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -152,7 +154,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject addTagToUsers(List<String> openIdList,int tagId) throws JSONException{
+	public JSONObject addTagToUsers(List<String> openIdList,int tagId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -176,7 +178,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject updateRemark4User(String openId,String remark) throws JSONException{
+	public JSONObject updateRemark4User(String openId,String remark) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -195,7 +197,7 @@ public class UserMgrHandle {
 	 * @return
 	 * @throws JSONException 
 	 */
-	public static JSONObject getUserInfo(String openId) throws JSONException{
+	public JSONObject getUserInfo(String openId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + token + "&openid=" + openId + "&lang=" + "zh_CN";
 		log.info("获取用户基本信息（GET）" + url );
@@ -212,7 +214,7 @@ public class UserMgrHandle {
 	 * @return
 	 * @throws JSONException 
 	 */
-	public static JSONObject getUsersInfo(List<String> openIds) throws JSONException{
+	public JSONObject getUsersInfo(List<String> openIds) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -240,7 +242,7 @@ public class UserMgrHandle {
 	 * @return {count":2,"data":{"openid":["OPENID1","OPENID2"]},"next_openid":"NEXT_OPENID"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject getUsersByTag(int tagId,String nextOpenId) throws JSONException{
+	public JSONObject getUsersByTag(int tagId,String nextOpenId) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -261,7 +263,7 @@ public class UserMgrHandle {
 	 * @return {"total":2,"count":2,"data":{"openid":["OPENID1","OPENID2"]},"next_openid":"NEXT_OPENID"} 或 {"errcode":40013,"errmsg":"invalid appid"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject getUsers(String nextOpenid) throws JSONException {
+	public JSONObject getUsers(String nextOpenid) throws JSONException {
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + token + "&next_openid=" + nextOpenid ;
 		log.info("获取用户列表（GET）" + url );
@@ -279,7 +281,7 @@ public class UserMgrHandle {
 	 * @return {"total":23000,count":2,"data":{"openid":["OPENID1","OPENID2"]},"next_openid":"NEXT_OPENID"} 或 {"errcode":40013,"errmsg":"invalid appid"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject getBlackUsers(String beginOpenid) throws JSONException{
+	public JSONObject getBlackUsers(String beginOpenid) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -298,7 +300,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject blackUsers(List<String> openIdList) throws JSONException{
+	public JSONObject blackUsers(List<String> openIdList) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();
@@ -321,7 +323,7 @@ public class UserMgrHandle {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	public static JSONObject unBlackUsers(List<String> openIdList) throws JSONException{
+	public JSONObject unBlackUsers(List<String> openIdList) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token=" + token ;
 		JSONObject jsonObj = new JSONObject();

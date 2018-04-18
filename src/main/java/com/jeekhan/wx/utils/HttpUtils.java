@@ -156,8 +156,12 @@ public class HttpUtils {
             httpPost.setConfig(requestConfig);
             List<NameValuePair> pairList = new ArrayList<>(params.size());
             for (Map.Entry<String, Object> entry : params.entrySet()) {
-                NameValuePair pair = new BasicNameValuePair(entry.getKey(), entry
-                        .getValue().toString());
+            		NameValuePair pair;
+            		if(entry.getValue() != null) {
+            			pair = new BasicNameValuePair(entry.getKey(), entry.getValue().toString());
+            		}else {
+            			pair = new BasicNameValuePair(entry.getKey(), null);
+            		}
                 pairList.add(pair);
             }
             httpPost.setEntity(new UrlEncodedFormEntity(pairList, Charset.forName("UTF-8")));

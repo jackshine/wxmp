@@ -1,15 +1,8 @@
 package com.jeekhan.wx.msg;
 
 import org.dom4j.Element;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.jeekhan.wx.api.UserMgrHandle;
-import com.jeekhan.wx.api.WXProcess;
-import com.jeekhan.wx.utils.HttpUtils;
 
 /**
  * 接收微信事件消息，并作相应的处理
@@ -20,13 +13,9 @@ import com.jeekhan.wx.utils.HttpUtils;
  */
 @Component
 public class RecvEventMsgHandle {
-	@Value("${busi.user-create-url}")
-	private String userCreateURl;	//用户注册请求URL
-	@Value("${busi.user-cancel-url}")
-	private String userCancelURl;	//用户注销请求URL
+
 	@Autowired
 	private RespMsgHandle respMsgHandle;
-	
 	
 	/**
 	 * 1、关注/取消关注事件消息
@@ -51,21 +40,8 @@ public class RecvEventMsgHandle {
 	 */
 	protected Object recvEventSubscribe(Element xmlElement){
 		String fromUser = xmlElement.selectSingleNode("FromUserName").getText();
-		//调用用户注册回调
-		new WXProcess() {
-			@Override 
-			public void process() {
-				try {
-					JSONObject user = UserMgrHandle.getUserInfo(fromUser);
-					if(user != null) {
-						HttpUtils.doPost(userCreateURl, user);	//发送注册请求给业务服务器
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}.process();
-		return respMsgHandle.respTextMsg(fromUser,"欢迎您加入我们！！！");
+		//return respMsgHandle.respTextMsg(fromUser,"欢迎您加入我们，系统正在进行注册，稍等一会儿就会为您开通摩放优选用户！！！");
+		return "success";
 	}
 	
 	/**
@@ -75,21 +51,6 @@ public class RecvEventMsgHandle {
 	 */
 	protected Object recvEventUnsubscribe(Element xmlElement){
 		String fromUser = xmlElement.selectSingleNode("FromUserName").getText();
-		//调用用户注销回调
-		new WXProcess() {
-			@Override 
-			public void process() {
-				try {
-					JSONObject user = new JSONObject();
-					user.put("openid", fromUser);
-					if(user != null) {
-						HttpUtils.doPost(userCancelURl, user);	//发送注销请求给业务服务器
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}.process();
 		return respMsgHandle.respTextMsg(fromUser,"多谢您以往的支持，期盼您的再次回来！！！");
 	}
 	

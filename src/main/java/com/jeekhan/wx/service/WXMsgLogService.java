@@ -4,8 +4,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import org.dom4j.Element;
-
 import com.jeekhan.wx.model.WXMsgLog;
 import com.jeekhan.wx.utils.PageCond;
 
@@ -56,5 +54,11 @@ public interface WXMsgLogService {
 	 * @return
 	 */
 	public int updateRespInfo(BigInteger recvId,BigInteger respId );
+	
+	/**
+     * 获取待注册的粉丝用户100条
+     * @return
+     */
+    public List<WXMsgLog> get4RegistFans();
 
 }
