@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +59,7 @@ public class AccountQRAction {
 	 */
 	@RequestMapping("/index")
 	public String getIndex(ModelMap map) {
-		return "page-account";
+		return "page-qrcode";
 	}
 	
 	/**
@@ -85,11 +87,14 @@ public class AccountQRAction {
 		try {
 			//系统检查
 			WXQRCode rec = this.wXQRCodeService.get("0", sceneId);
-			if(rec != null) {
-				jsonRet = new JSONObject();
-				jsonRet.put("errcode", -666);
-				jsonRet.put("errmsg", "管理平台中该场景值已被使用！");
-				return jsonRet.toString();
+			if(rec != null) {//删除
+				if(rec.getLocalImgUrl()!=null) {
+					File file = new File(this.qrCodeFileDir,rec.getLocalImgUrl());
+					if(file.exists()) {
+						file.delete();
+					}
+				}
+				this.wXQRCodeService.delete(rec);
 			}
 			jsonRet = accountQRHandle.createTempTicket(sceneId, expire_seconds);
 			if(!jsonRet.has("errcode")) {

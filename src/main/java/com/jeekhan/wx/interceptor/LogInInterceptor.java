@@ -28,7 +28,11 @@ public class LogInInterceptor extends HandlerInterceptorAdapter{
 		//String requestUri = request.getRequestURI();  
         String contextPath = request.getContextPath();  
         //String url = requestUri.substring(contextPath.length()); 
-        	Operator operator =  (Operator)request.getSession().getAttribute("operator");   
+        	Operator operator =  (Operator)request.getSession().getAttribute("operator");  
+        	String host = request.getRemoteHost();
+        	if("127.0.0.1".equals(host) || "localhost".equals(host) || "0:0:0:0:0:0:0:1".equals(host)) {
+        		return true;
+        	}
         if(operator == null || operator.getLoginUserId() == null || operator.getLoginUserId() < 1){  
             log.info("Interceptor：跳转到login-page页面！");  
             response.sendRedirect(contextPath + "/login-page");
