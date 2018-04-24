@@ -58,7 +58,6 @@ public class WXMenuAction {
 		try {
 			JSONObject jsonRet = new JSONObject();
 			if(jsonMenuStr == null || jsonMenuStr.trim().length() == 0) {
-				jsonRet = 
 				jsonRet.put("errcode", -666);
 				jsonRet.put("errmsg", "默认菜单字符串不可为空！");
 				return jsonRet.toString();
@@ -124,22 +123,29 @@ public class WXMenuAction {
 	 * @return {"errcode":0,"errmsg":"ok"}
 	 * @throws JSONException 
 	 */
-	//@RequestMapping("/deleteMenu")
-	public JSONObject deleteMenu() throws JSONException {
+	@RequestMapping("/deleteMenu")
+	@ResponseBody
+	public String deleteMenu() throws JSONException {
+		JSONObject jsonRet = new JSONObject();
 		try {
-			JSONObject jsonRet = CustomizeMenuHandle.deleteMenu();
-			if(!jsonRet.has("errcode")) {
-				jsonRet = new JSONObject();
-				jsonRet.put("errcode", 0);
-				jsonRet.put("errmsg", "ok");
+			jsonRet = CustomizeMenuHandle.deleteMenu();
+			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
+				File dir = new File(this.wxmenuFileDir);
+					if(dir.exists()) {
+					File[] list = dir.listFiles();
+					if(list != null && list.length>0) {
+						for(File file:list) {
+							file.delete();
+						}
+					}
+				}
 			}
-			return jsonRet;
+			return jsonRet.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
-			JSONObject jsonRet = new JSONObject();
 			jsonRet.put("errcode", -777);
 			jsonRet.put("errmsg", "系统异常，异常信息：" + e.getMessage());
-			return jsonRet;
+			return jsonRet.toString();
 		}
 	}
 	
@@ -204,24 +210,30 @@ public class WXMenuAction {
 	 * @throws JSONException 
 	 */
 	@RequestMapping("/deleteConditionalMenu")
-	public JSONObject deleteConditionalMenu(String menuId) throws JSONException {
+	@ResponseBody
+	public String deleteConditionalMenu(String menuId) throws JSONException {
+		JSONObject jsonRet = new JSONObject();
 		try {
-			JSONObject jsonRet ;
 			if(menuId == null || menuId.trim().length() == 0) {
 				jsonRet = new JSONObject();
 				jsonRet.put("errcode", -666);
 				jsonRet.put("errmsg", "个性化菜单字符串不可为空！");
-				return jsonRet;
+				return jsonRet.toString();
 			}
 			menuId = menuId.trim();
 			jsonRet = customizeMenuHandle.deleteConditonalMenu(menuId);
-			return jsonRet;
+			if(jsonRet.has("errcode") && jsonRet.getInt("errcode") == 0) {
+				File file = new File(this.wxmenuFileDir,this.conditionalMenu_filename.replaceAll("MENUID", menuId));
+				if(file.exists()) {//已有该菜单
+					file.delete();
+				}
+			}
+			return jsonRet.toString();
 		}catch(Exception e) {
 			e.printStackTrace();
-			JSONObject jsonRet = new JSONObject();
 			jsonRet.put("errcode", -777);
 			jsonRet.put("errmsg", "系统异常，异常信息：" + e.getMessage());
-			return jsonRet;
+			return jsonRet.toString();
 		}
 	}
 	

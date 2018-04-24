@@ -42,7 +42,7 @@ public class AccountQRHandle {
 		jsonObj.put("action_name", "QR_SCENE");
 		JSONObject action_info = new JSONObject();
 		JSONObject scene = new JSONObject();
-		scene.put("sence_id", sence_id);
+		scene.put("scene_id", sence_id);
 		action_info.put("scene",scene);
 		jsonObj.put("action_info", action_info);
 		log.info("创建公众号临时二维码（POST）" + url + "，参数：" + jsonObj);

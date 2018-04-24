@@ -49,16 +49,13 @@ public class JSAPITicket {
 	}
 	
 	//生成JS-SDK权限验证的签名
-	public static String signature(String url) throws JSONException {
-		String noncestr = "dfhkjwl23";
-		long timestamp = System.currentTimeMillis();
+	public static String signature(String url,long timestamp,String noncestr) throws JSONException {
 		String jsapi_ticket = getJSAPITicket();
 		String string1 = "jsapi_ticket=" + jsapi_ticket + "&noncestr="+ noncestr +"&timestamp="+ timestamp + "&url=" + url;
 		String ret = null;
 		try {
 			ret = SunSHAUtils.encodeSHAHex(string1);
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ret;

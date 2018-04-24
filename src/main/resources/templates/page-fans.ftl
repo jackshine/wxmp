@@ -12,10 +12,10 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
-    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/templatemo-style.css" rel="stylesheet">
     
-    <script src="${contextPath}/script/date-format.js" type="text/javascript"></script>
+    <script src="/script/date-format.js" type="text/javascript"></script>
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
@@ -263,7 +263,7 @@ var tagMgrMainVue = new Vue({
 			 }
 			 if(confirm("如果删除则将收回用户身上的标签信息，您确定是要删除标签【" + this.selected.tagId + "】吗？")){
 				 $.ajax({
-						url: '${contextPath}/fans/tag/delete',
+						url: '/fans/tag/delete',
 						data: {'tagId':this.selected.tagId},
 						success: function(jsonRet,status,xhr){
 							if(jsonRet){
@@ -285,7 +285,7 @@ var tagMgrMainVue = new Vue({
 });
 function getAllTags(){
 	 $.ajax({
-		url: '${contextPath}/fans/tag/getAll',
+		url: '/fans/tag/getAll',
 		data: {},
 		success: function(jsonRet,status,xhr){
 			if(jsonRet){
@@ -358,7 +358,7 @@ var tagMgrVue = new Vue({
 					return false;
 				}
 				$.ajax({
-					url: '${contextPath}/fans/tag/' + (this.tagId ? 'update':'create'),
+					url: '/fans/tag/' + (this.tagId ? 'update':'create'),
 					data: {'tagName':this.tagName,'tagDesc':this.tagDesc,'tagId':this.tagId},
 					success: function(jsonRet,status,xhr){
 						if(jsonRet){
@@ -527,7 +527,7 @@ var fansMgrMainVue = new Vue({
 				return;
 			}
 			$.ajax({
-				url: '${contextPath}/fans/fans/black',
+				url: '/fans/fans/black',
 				data: {'openIds':selectedArr.join(",")},
 				success: function(jsonRet,status,xhr){
 					if(jsonRet){
@@ -556,7 +556,7 @@ var fansMgrMainVue = new Vue({
 				return;
 			}
 			$.ajax({
-				url: '${contextPath}/fans/fans/unBlack',
+				url: '/fans/fans/unBlack',
 				data: {'openIds':selectedArr.join(",")},
 				success: function(jsonRet,status,xhr){
 					if(jsonRet){
@@ -620,7 +620,7 @@ var fansMgrMainVue = new Vue({
 
 function searchFans(){
 	$.ajax({
-		url: '${contextPath}/fans/fans/search',
+		url: '/fans/fans/search',
 		data: {'pageSize':fansMgrMainVue.searchPageCond.pageSize,'begin':fansMgrMainVue.searchPageCond.begin,'jsonParams':JSON.stringify(fansMgrMainVue.params)},
 		success: function(jsonRet,status,xhr){
 			if(jsonRet){
@@ -706,7 +706,7 @@ var fansTagMgrVue = new Vue({
 					return false;
 				}
 				$.ajax({
-					url: '${contextPath}/fans/fans/' + (this.mode=='add' ? 'addTag':'moveTag'),
+					url: '/fans/fans/' + (this.mode=='add' ? 'addTag':'moveTag'),
 					data: {'tagId':this.params.tagId,'openIds':this.params.openIds},
 					success: function(jsonRet,status,xhr){
 						if(jsonRet){
@@ -781,7 +781,7 @@ var fansRemarkMgrVue = new Vue({
 					return false;
 				}
 				$.ajax({
-					url: '${contextPath}/fans/fans/updateRemark',
+					url: '/fans/fans/updateRemark',
 					data: {'remark':this.params.remark,'openId':this.params.openId},
 					success: function(jsonRet,status,xhr){
 						if(jsonRet){

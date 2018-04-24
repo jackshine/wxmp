@@ -12,14 +12,14 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
-    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/templatemo-style.css" rel="stylesheet">
     
-    <link rel="stylesheet" href="${contextPath}/css/fileinput.min.css">  
-    <script src="${contextPath}/script/fileinput.min.js"></script>
-    <script src="${contextPath}/script/zh.js"></script>
+    <link rel="stylesheet" href="/css/fileinput.min.css">  
+    <script src="/script/fileinput.min.js"></script>
+    <script src="/script/zh.js"></script>
     
-    <script src="${contextPath}/script/date-format.js" type="text/javascript"></script>
+    <script src="/script/date-format.js" type="text/javascript"></script>
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
@@ -103,7 +103,7 @@
 			 }
 			 if(confirm("您确定是要注销用户" + this.select_username + "吗？用户注销的同时客服账号也将同时注销！！！")){
 				 $.ajax({
-						url: '${contextPath}/sys/user/destroy',
+						url: '/sys/user/destroy',
 						data: {'username':usersVm.select_username},
 						success: function(jsonRet,status,xhr){
 							if(jsonRet){
@@ -128,7 +128,7 @@
 			 }
 			 if(confirm("您确定是要为用户" + this.select_username + "申请微信客服吗？")){
 				 $.ajax({
-						url: '${contextPath}/kfaccount/add',
+						url: '/kfaccount/add',
 						data: {'account':usersVm.select_username,'nickname':usersVm.select_username,'pwd':'123456'},
 						success: function(jsonRet,status,xhr){
 							if(jsonRet){
@@ -153,7 +153,7 @@
 			 }
 			 if(confirm("您确定是要为用户" + this.select_username + "注销微信客服吗？")){
 				 $.ajax({
-						url: '${contextPath}/kfaccount/delete',
+						url: '/kfaccount/delete',
 						data: {'account':usersVm.select_username},
 						success: function(jsonRet,status,xhr){
 							if(jsonRet){
@@ -207,7 +207,7 @@
 	 }
  });
  $.ajax({
-		url: '${contextPath}/sys/user/get',
+		url: '/sys/user/get',
 		data: {},
 		success: function(jsonRet,status,xhr){
 			if(jsonRet){
@@ -284,7 +284,7 @@ var addUser = new Vue({
 					return false;
 				}
 				$.ajax({
-					url: '${contextPath}/sys/user/add',
+					url: '/sys/user/add',
 					data: {'username':this.username,'email':this.email,'openKf':this.openKf,'passwd':'123456'},
 					success: function(jsonRet,status,xhr){
 						if(jsonRet){
@@ -375,7 +375,7 @@ var editUser = new Vue({
 				return false;
 			}
 			$.ajax({
-				url: '${contextPath}/sys/user/update',
+				url: '/sys/user/update',
 				data: {'username':this.username,'email':this.email,'sex':this.sex,'passwd':'123456','introduce':this.introduce,'openKf':0},
 				success: function(jsonRet,status,xhr){
 					if(jsonRet){
@@ -473,7 +473,7 @@ var editPwd = new Vue({
 				return false;
 			}
 			$.ajax({
-				url: '${contextPath}/sys/user/updatePwd',
+				url: '/sys/user/updatePwd',
 				data: {'username':this.username,'newPwd':this.newPassword,'oldPwd':this.oldPassword},
 				success: function(jsonRet,status,xhr){
 					if(jsonRet){
@@ -531,7 +531,7 @@ var editPwd = new Vue({
 $(document).on('ready', function() {
     $("#picFile").fileinput({
     	language: 'zh', //设置语言
-        uploadUrl: '${contextPath}/kfaccount/uploadImg', //上传的地址
+        uploadUrl: '/kfaccount/uploadImg', //上传的地址
         uploadAsync:true,
         showUpload: true, //是否显示上传按钮
         uploadExtraData:{"account":'${operator.loginUsername}'},
@@ -630,7 +630,7 @@ var editKF = new Vue({
 				return false;
 			}
 			$.ajax({
-				url: '${contextPath}/kfaccount/update',
+				url: '/kfaccount/update',
 				data: {'account':this.username,'nickname':this.nickname,'pwd':this.kfPasswd},
 				success: function(jsonRet,status,xhr){
 					if(jsonRet){

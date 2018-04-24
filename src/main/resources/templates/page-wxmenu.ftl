@@ -12,8 +12,8 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
-    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/templatemo-style.css" rel="stylesheet">
     
 </head>
 <body class="light-gray-bg">
@@ -58,24 +58,21 @@
       <div class="row" id="defaultMgr" style="display:none;padding:0 5px">
         <div class="panel panel-info">
           <div class="panel-heading" style="margin:0" >
-            默认菜单管理(JSON格式)
+            <span>默认菜单管理(JSON格式) </span>
+            <button type="button" class="btn btn-danger" style="margin:0 20px;padding:0 3px" v-on:click="deleteMenu">&nbsp;&nbsp;删 除&nbsp;&nbsp;</button>
           </div>
           <div class="panel-body">
-          <div class="row">
 	        <form class="form-horizontal" id="defaultMenuForm"  method ="post" autocomplete="on" enctype="multipart/form-data" role="form" > 
-              <div class="form-group">
-                <div class="col-xs-offset-1 col-xs-10">
+              <div class="form-group" style="padding:6px 18px">
                   <textarea class="form-control" v-model="params.defaultMenuData"  maxLength=1000 rows=20 required ></textarea>
-                </div>
               </div>
               <div class="form-group">
-                <div class="col-xs-offset-4 col-xs-10">
+                <div style="text-align:center">
                   <button type="button" class="btn btn-info"  style="margin:20px" v-on:click="saveDefault">&nbsp;&nbsp;提 交&nbsp;&nbsp;</button>
                   <button type="button" class="btn btn-warning"  style="margin:20px" v-on:click="resetDefault">&nbsp;&nbsp;重 置&nbsp;&nbsp; </button>
                 </div>
               </div>      
 	        </form>
-           </div>
           </div>            
         </div>
       </div>
@@ -86,36 +83,33 @@
             个性化菜单管理
           </div>
           <div class="panel-body">
-          <div class="row">
 	        <form class="form-horizontal" id="conditionalMenuForm"  method ="post" autocomplete="on" enctype="multipart/form-data" role="form" >       
-	        	  <div class="col-xs-offset-1 row" >
-	            <div class="col-xs-6 form-group" style="padding-left:0">
-	              <label class="col-xs-4 control-label" style="padding-left:5px;padding-right:5px">已有菜单</label>
-	              <div class="col-xs-8" style="padding-left:5px;padding-right:5px">
+	          <div class="form-group" >
+	              <label class="col-sm-2 control-label" >已有菜单</label>
+	              <div class="col-sm-3" style="padding-left:5px;padding-right:5px">
 	                <select class="form-control" v-model="params.menuId" name="msgType">
 	                  <option value="">请选择...</option>
                       <option v-for="value in initData.menuIdList" v-bind:value="value">{{value}}</option>
                     </select>
 	              </div>
-	            </div>
-	            <div class="col-xs-6 form-group" style="padding-left:0">
-                  <button type="button" class="btn btn-warning"  style="margin-left:20px" v-on:click="updCondi" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');">&nbsp;&nbsp;修 改&nbsp;&nbsp; </button>
-                  <button type="button" class="btn btn-info"  style="margin-left:20px" v-on:click="addCondi" onclick="$(this).addClass('active'); $(this).siblings().removeClass('active');">&nbsp;&nbsp;新 增&nbsp;&nbsp;</button>
-	            </div>	        
+	              <div class="col-sm-7">
+	                <button type="button" class="btn btn-primary"  style="margin-left:10px" v-on:click="getCondiMenu" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">&nbsp;&nbsp;获取菜单内容&nbsp;&nbsp; </button>
+	                <button type="button" class="btn btn-default"  style="margin-left:10px" v-on:click="addCondi" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">&nbsp;&nbsp;新 增&nbsp;&nbsp; </button>
+                    <button type="button" class="btn btn-warning"  style="margin-left:10px" v-on:click="updCondi" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">&nbsp;&nbsp;修 改&nbsp;&nbsp; </button>
+                    <button type="button" class="btn btn-danger"  style="margin-left:10px" v-on:click="delCondi" onclick="$(this).addClass('active');$(this).siblings().removeClass('active')">&nbsp;&nbsp;删 除&nbsp;&nbsp; </button>
+	              </div>
 	          </div>
-              <div class="form-group">
-                <div class="col-xs-offset-1 col-xs-10">
-                  <textarea class="form-control" v-model="params.conditionalMenuData" maxLength=1000 rows=18 required ></textarea>
-                </div>
+              <div class="form-group" style="padding:6px 18px">
+                  <textarea class="form-control" id="condiMenuText"  v-model="params.conditionalMenuData" maxLength=5000 rows=18 required readOnly></textarea>
               </div>
               <div class="form-group">
-                <div class="col-xs-offset-4 col-xs-10">
-                  <button type="button" class="btn btn-info"  style="margin:20px" v-on:click="saveCondi">&nbsp;&nbsp;提 交&nbsp;&nbsp;</button>
-                  <button type="button" class="btn btn-warning"  style="margin:20px" v-on:click="resetCondi">&nbsp;&nbsp;重 置&nbsp;&nbsp; </button>
+                <div style="text-align:center">
+                  <button v-if="condiMode ==='edit'" type="button" class="btn btn-info"  style="margin:20px" v-on:click="saveCondi">&nbsp;&nbsp;提 交&nbsp;&nbsp;</button>
+                  <button v-if="condiMode ==='edit'" type="button" class="btn btn-warning"  style="margin:20px" v-on:click="resetCondi">&nbsp;&nbsp;重 置&nbsp;&nbsp; </button>
+                  <button v-if="condiMode ==='del'" type="button" class="btn btn-warning"  style="margin:20px" v-on:click="deleteCondi">&nbsp;&nbsp;删 除&nbsp;&nbsp; </button>
                 </div>
               </div>      
 	        </form>
-           </div>
           </div>            
         </div>
       </div>       
@@ -133,6 +127,7 @@ var container = new Vue({
 			menuId:'',
 			conditionalMenuData:''
 		},
+		condiMode:'',	//个性化菜单操作模式
 		params:{//修改后的数据
 			defaultMenuData:'',
 			menuId:'',//要修改的个性化菜单ID
@@ -140,18 +135,37 @@ var container = new Vue({
 		}
 	},
 	methods:{
-		addCondi : function(){
-			this.params.menuId = '';
-			this.params.conditionalMenuData = '';
-		},
-		updCondi : function(event){
+		getCondiMenu: function(event){
 			if(!this.params.menuId){
-				alert("请先选择要修改的个性化菜单！");
+				alert('请先选择已有菜单！');
 				$(event.target).removeClass('active');
 				return;
 			}
-			this.params.conditionalMenuData = '';
 			getMenuData(false,this.params.menuId);//获取个性化菜单
+		},
+		addCondi : function(){
+			this.params.menuId = '';
+			this.params.conditionalMenuData = '';
+			$('#condiMenuText').attr('readonly',false);
+			this.condiMode = 'edit';
+		},
+		updCondi : function(event){
+			if(!this.params.menuId){
+				alert("请先选择要修改的个性化菜单并获取菜单内容！");
+				$(event.target).removeClass('active');
+				return;
+			}
+			$('#condiMenuText').attr('readonly',false);
+			this.condiMode = 'edit';
+		},
+		delCondi : function(event){
+			if(!this.params.menuId){
+				alert("请先选择要删除的个性化菜单并获取菜单内容！");
+				$(event.target).removeClass('active');
+				return;
+			}
+			$('#condiMenuText').attr('readonly',true);
+			this.condiMode = 'del';
 		},
 		resetDefault: function(){
 			this.params.defaultMenuData = this.initData.defaultMenuData;
@@ -182,7 +196,52 @@ var container = new Vue({
 			}else{
 				return;
 			}
+		},
+		deleteCondi : function(){
+			if(confirm("您确定要删除个性化菜单【" +  this.params.menuId +"】吗？")){
+				$.ajax({
+					url:'/wxmenu/deleteConditionalMenu',
+					data:{},
+					success: function(jsonRet,status,xhr){
+						if(jsonRet) {
+							if(0 == jsonRet.errcode) {
+								container.initData.conditionalMenuData = '';
+								container.params.conditionalMenuData = '';
+								alert("个性化菜单【" +  container.params.menuId +"】已成功删除！");
+							}else{//出现逻辑错误
+								alert(jsonRet.errmsg);
+							}
+						}else{
+							alert('系统数据访问失败！');
+						}
+					},
+					dataType: 'json'
+				});	
+			}
+		},
+		deleteMenu: function(){
+			if(confirm("您确定要删除自定义菜单(包括默认菜单和所有个性化菜单)吗？")){
+				$.ajax({
+					url:'/wxmenu/deleteMenu',
+					data:{},
+					success: function(jsonRet,status,xhr){
+						if(jsonRet) {
+							if(0 == jsonRet.errcode) {
+								container.initData.defaultMenuData = '';
+								container.params.defaultMenuData = '';
+								alert("自定义菜单已成功删除！");
+							}else{//出现逻辑错误
+								alert(jsonRet.errmsg);
+							}
+						}else{
+							alert('系统数据访问失败！');
+						}
+					},
+					dataType: 'json'
+				});
+			}
 		}
+		
 	}
 });
 /**
@@ -190,7 +249,7 @@ var container = new Vue({
  */
 function getCondiMenuIdList(){
 	$.ajax({
-		url:'${contextPath}/wxmenu/getCondiMenuIdList',
+		url:'/wxmenu/getCondiMenuIdList',
 		data:{},
 		success: function(jsonRet,status,xhr){
 			if(jsonRet) {
@@ -212,7 +271,7 @@ getCondiMenuIdList();
  * menuId：个性化菜单ID
  */
 function getMenuData(isDefault,menuId){
-	var geturl = '${contextPath}/wxmenu/';
+	var geturl = '/wxmenu/';
 	if(isDefault){
 		geturl = geturl + 'getDefaultMenu';
 	}else{
@@ -250,7 +309,7 @@ getMenuData(true,null); //获取默认菜单
  * menuId：个性化菜单ID
  */
 function saveMenuData(isDefault,menuData,menuId){
-	var saveurl = '${contextPath}/wxmenu/';
+	var saveurl = '/wxmenu/';
 	if(isDefault){
 		saveurl = saveurl + 'saveDefaultMenu';
 	}else{

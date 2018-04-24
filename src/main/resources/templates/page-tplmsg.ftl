@@ -12,8 +12,8 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
-    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/templatemo-style.css" rel="stylesheet">
     
 </head>
 <body class="light-gray-bg">

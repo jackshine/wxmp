@@ -12,10 +12,10 @@
     <!--Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!-- -->
-    <link href="${contextPath}/css/font-awesome.min.css" rel="stylesheet">
-    <link href="${contextPath}/css/templatemo-style.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/templatemo-style.css" rel="stylesheet">
     
-    <script src="${contextPath}/script/date-format.js" type="text/javascript"></script>
+    <script src="/script/date-format.js" type="text/javascript"></script>
 </head>
 <body class="light-gray-bg">
 <div style="height:18px;background-color:#E0E0E0 ;margin-bottom:5px;"></div>
@@ -260,7 +260,7 @@ var container = new Vue({
 });
 function search(){
 	$.ajax({
-		url: '${contextPath}/searchmsg/search',
+		url: '/searchmsg/search',
 		data: {'pageSize':container.searchPageCond.pageSize,'begin':container.searchPageCond.begin,'jsonParams':JSON.stringify(container.params)},
 		success: function(jsonRet,status,xhr){
 			if(jsonRet){

@@ -31,12 +31,6 @@ import com.jeekhan.wx.utils.HttpUtils;
 public class CustomizeMenuHandle {
 	static Logger log = LoggerFactory.getLogger(CustomizeMenuHandle.class);
 
-	private static String CUSTOMMENU;
-    
-    @Value("${wx.DEFAULT-MENU}")
-    public void setDefaultMenu(String defaultMenu) {
-    		CustomizeMenuHandle.CUSTOMMENU = defaultMenu;
-    }
 	
 	/**
 	 * 创建默认菜单
@@ -48,11 +42,8 @@ public class CustomizeMenuHandle {
 	public JSONObject createMenu(JSONObject menu) throws JSONException{
 		String token = AccessToken.getAccessToken();
 		String url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + token;
-		if(menu == null ) {
-			menu = new JSONObject(CUSTOMMENU);
-		}
 		log.info("创建默认菜单（POST）：" + url + ",参数：" + menu);
-		String ret = HttpUtils.doPostSSL(url, CUSTOMMENU);
+		String ret = HttpUtils.doPostSSL(url, menu);
 		JSONObject jsonRet = new JSONObject(ret);
 		log.info("创建默认菜单（POST）返回：" + ret );
 		return jsonRet;
