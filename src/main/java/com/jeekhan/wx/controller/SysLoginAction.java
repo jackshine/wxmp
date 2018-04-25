@@ -111,7 +111,7 @@ public class SysLoginAction {
 	@RequestMapping(value="/logout")
 	public String logout(Map<String,Object>map,SessionStatus session){
 		Operator operator = (Operator) map.get("operator");
-		if(operator != null && operator.getLoginUserId() > 0){
+		if(operator != null && operator.getLoginUserId() != null && operator.getLoginUserId() > 0){
 			session.setComplete();	//清除用户session
 		}
 		return "redirect:/login-page";

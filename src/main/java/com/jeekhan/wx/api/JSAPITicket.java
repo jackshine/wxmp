@@ -26,7 +26,7 @@ public class JSAPITicket {
 		long cutTime = System.currentTimeMillis();
 		long needTime = LASTUPDTIME + EXPIRESIN*1000 + 10000;//提前10更新
 		if(JSAPI_TICKET == null || JSAPI_TICKET.length()<1 || cutTime >= needTime){
-			String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi ";
+			String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
 			url.replaceAll("ACCESS_TOKEN", AccessToken.getAccessToken());
 			String result = null;
 			JSONObject json = null;

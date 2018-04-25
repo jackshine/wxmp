@@ -11,9 +11,9 @@ server:
 spring:
     datasource:
         name: wxmp
-        url: jdbc:mysql://192.168.0.104:3306/wxmp
+        url: jdbc:mysql://47.106.70.72:3306/db_wxmp
         username: jee
-        password: jee8901
+        password: YesOrNoAnd0+1
         # 使用druid数据源
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.jdbc.Driver
@@ -39,8 +39,8 @@ wx:
 ######业务参数############
 #用户注册URL、注销URL
 busi:
-  user-create-url: 'http://localhost:8080/mfyx/user/create'
-  user-cancel-url: 'http://localhost:8080/mfyx/user/cancel'
+  user-create-url: 'http://localhost:8080/user/create'
+  user-cancel-url: 'http://localhost:8080/user/cancel'
   
 ######系统参数############  
 sys:

@@ -28,7 +28,7 @@
   <div class="row" style="padding:5px 0 0 0;">
     <div class="panel panel-info">
       <div class="panel-heading" style="margin:0">
-        <#if operator.roleLvl == "L9">
+        <#if ((operator.roleLvl)!'') == "L9">
         <button type="button" class="btn btn-primary" style="margin-left:20px" v-on:click="addUser">&nbsp;&nbsp;新增用户&nbsp;&nbsp;</button>
         <button type="button" class="btn btn-warning" style="margin-left:20px" v-on:click="destroyUser">&nbsp;&nbsp;注销用户&nbsp;&nbsp; </button>
         <button type="button" class="btn btn-primary" style="margin-left:20px" v-on:click="applyKF">&nbsp;&nbsp;申请客服&nbsp;&nbsp; </button>
@@ -85,7 +85,7 @@
 				 return '未开通';
 			 }
 		 },
-		 <#if operator.roleLvl == "L9">
+		 <#if ((operator.roleLvl)!'') == "L9">
 		 addUser:function(){
 			$("#addUserModal").modal('show');
 			$("#username").val('');
@@ -176,7 +176,7 @@
 			 $("#editUserModal").modal('show');
 			 for(var i=0;i<this.users.length;i++){
 				 var u = this.users[i];
-				 if(u.username == '${operator.loginUsername}'){
+				 if(u.username == '${(operator.loginUsername)!''}'){
 					 editUser.username = u.username;
 					 editUser.sex = u.sex;
 					 editUser.email = u.email;
@@ -194,7 +194,7 @@
 			 $("#editKFModal").modal('show');
 			 for(var i=0;i<this.users.length;i++){
 				 var u = this.users[i];
-				 if(u.username == '${operator.loginUsername}'){
+				 if(u.username == '${(operator.loginUsername)!''}'){
 					 editKF.username = u.username;
 					 editKF.kfPasswd = u.kfPasswd;
 					 editKF.nickname = u.nickname;
@@ -224,7 +224,7 @@
 	});
 </script>
 
-<#if operator.roleLvl == "L9">
+<#if ((operator.roleLvl)!'') == "L9">
 <!-- 新增用户模态对话框（Modal） -->
 <div class="modal fade " id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" data-backdrop="static">
    <div class="modal-dialog">
